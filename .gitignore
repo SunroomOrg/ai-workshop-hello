@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Remotion intro video — rendered MP4s + thumbnails (kept out of git;
+# regenerate with `cd video && npx remotion render`).
+video/out/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

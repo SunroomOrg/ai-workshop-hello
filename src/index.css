@@ -189,6 +189,29 @@ kbd {
   pointer-events: none;
 }
 
+/* Map sparkle twinkles — slow staggered blink. Each .map-sparkle uses an
+ * animation-delay set inline so phases are spread out. Disabled under
+ * prefers-reduced-motion for accessibility. */
+.map-sparkle {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: mapSparkle 3.6s steps(2, end) infinite;
+}
+
+@keyframes mapSparkle {
+  0%, 100% { opacity: 0.95; }
+  45% { opacity: 0.95; }
+  55% { opacity: 0.15; }
+  90% { opacity: 0.15; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-sparkle {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
 /* Footer ---------------------------------------------------------------- */
 
 .world__footer {

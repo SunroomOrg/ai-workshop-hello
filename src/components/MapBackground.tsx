@@ -80,6 +80,12 @@ export function MapBackground() {
 
       <rect width="140" height="60" fill="url(#water)" />
 
+      {/* Sakura/peach pastel sky — chunky horizontal bands sit ABOVE the water
+          rect and BELOW the regions, so mountains and the Capitol naturally
+          paint through. Stepped, never gradient: 16-bit budget. */}
+      <SkyBands />
+      <SakuraField />
+
       <Vietnam />
       <Texas />
       <AustinUT />
@@ -97,13 +103,244 @@ export function MapBackground() {
 
       <DottedPath />
 
-      <g>
-        <rect x="6" y="6" width="6" height="2.4" fill="#ffffff" opacity="0.85" />
-        <rect x="38" y="3" width="8" height="2.4" fill="#ffffff" opacity="0.85" />
-        <rect x="80" y="4" width="6" height="2.4" fill="#ffffff" opacity="0.85" />
-        <rect x="116" y="6" width="7" height="2.4" fill="#ffffff" opacity="0.85" />
-      </g>
+      <CloudPass />
+      <SparkleField />
+      <HeartTwinkles />
     </svg>
+  )
+}
+
+/* ──────────────────────  Cute sky atmosphere  ────────────────────────────
+ * Soft pastel band stack across the upper third. Each band is a flat fill
+ * (no gradients — Game Boy 4-color discipline, just extended to ~5 stops).
+ * Palette goes sakura-pink at the very top → peach → cream as it meets the
+ * horizon, so when you look at the map it feels like a dawn save-file. */
+function SkyBands() {
+  return (
+    <g aria-hidden="true">
+      <rect x="0" y="0" width="140" height="3" fill="#ffd0e0" />
+      <rect x="0" y="3" width="140" height="3" fill="#ffdcea" />
+      <rect x="0" y="6" width="140" height="3" fill="#ffe4d2" />
+      <rect x="0" y="9" width="140" height="2.5" fill="#ffeacc" />
+      <rect x="0" y="11.5" width="140" height="1.5" fill="#fff0d8" />
+    </g>
+  )
+}
+
+/* Cherry-blossom flecks scattered through the pastel sky. Each fleck is a
+ * 5-pixel plus-shape (4 petals + 1 cream center). Asymmetric placement so
+ * it reads as scenery, not a wallpaper repeat. */
+function SakuraField() {
+  const flecks: Array<{ cx: number; cy: number; deeper?: boolean }> = [
+    { cx: 4, cy: 4 },
+    { cx: 18, cy: 9.5, deeper: true },
+    { cx: 28, cy: 4 },
+    { cx: 34, cy: 11 },
+    { cx: 50, cy: 3 },
+    { cx: 58, cy: 11.5, deeper: true },
+    { cx: 68, cy: 5 },
+    { cx: 76, cy: 11 },
+    { cx: 90, cy: 3.5 },
+    { cx: 102, cy: 6, deeper: true },
+    { cx: 112, cy: 11 },
+  ]
+  return (
+    <g aria-hidden="true">
+      {flecks.map((f, i) => (
+        <Sakura key={i} cx={f.cx} cy={f.cy} deeper={f.deeper} />
+      ))}
+    </g>
+  )
+}
+
+function Sakura({
+  cx,
+  cy,
+  deeper,
+}: {
+  cx: number
+  cy: number
+  deeper?: boolean
+}) {
+  const petal = deeper ? '#ff9ebe' : '#ffb7c8'
+  const center = '#fff5e1'
+  const s = 0.4 // pixel size in viewBox units
+  return (
+    <g>
+      <rect x={cx - s * 1.5} y={cy - s / 2} width={s} height={s} fill={petal} />
+      <rect x={cx + s / 2} y={cy - s / 2} width={s} height={s} fill={petal} />
+      <rect x={cx - s / 2} y={cy - s * 1.5} width={s} height={s} fill={petal} />
+      <rect x={cx - s / 2} y={cy + s / 2} width={s} height={s} fill={petal} />
+      <rect x={cx - s / 2} y={cy - s / 2} width={s} height={s} fill={center} />
+    </g>
+  )
+}
+
+/* Chibi pink-tinted clouds in the upper third. Replaces the original four
+ * pure-white rects so they sit on the new pastel sky without flatly
+ * overpowering it. Pink underside shadow adds depth without breaking the
+ * pixel-art rule (no soft drop shadow — just a flat band). */
+function CloudPass() {
+  return (
+    <g aria-hidden="true">
+      <ChibiCloud x={4} y={5} w={7} h={2.4} />
+      <ChibiCloud x={36} y={2} w={9} h={2.4} bigBumpRight />
+      <ChibiCloud x={78} y={3.4} w={7} h={2.4} />
+      <ChibiCloud x={114} y={5.4} w={8} h={2.4} bigBumpRight />
+      <ChibiCloud x={62} y={9.6} w={5} h={1.8} small />
+    </g>
+  )
+}
+
+function ChibiCloud({
+  x,
+  y,
+  w,
+  h,
+  small,
+  bigBumpRight,
+}: {
+  x: number
+  y: number
+  w: number
+  h: number
+  small?: boolean
+  bigBumpRight?: boolean
+}) {
+  const body = '#fff0f3'
+  const under = '#ffd0dc'
+  const rim = '#ffe2ea'
+  return (
+    <g opacity={small ? 0.85 : 0.95}>
+      {/* underside shadow band — flat, no blur */}
+      <rect x={x} y={y + h - 0.5} width={w} height={0.5} fill={under} />
+      {/* main body */}
+      <rect x={x} y={y} width={w} height={h - 0.5} fill={body} />
+      {/* top rim highlight: a 0.4-tall pale strip */}
+      <rect x={x + 0.4} y={y} width={w - 0.8} height={0.4} fill={rim} />
+      {/* chunky bumps on the top edge */}
+      <rect x={x + 1} y={y - 0.6} width={1.2} height={0.6} fill={body} />
+      <rect
+        x={x + (bigBumpRight ? w - 2.6 : w - 2)}
+        y={y - 0.8}
+        width={bigBumpRight ? 1.8 : 1.2}
+        height={0.8}
+        fill={body}
+      />
+      {!small && (
+        <rect
+          x={x + w / 2 - 0.4}
+          y={y - 0.4}
+          width={1}
+          height={0.4}
+          fill={body}
+        />
+      )}
+    </g>
+  )
+}
+
+/* Twinkles: 4-pointed pixel stars (1 center + 4 directional pixels). Soft
+ * cream/white. Animated via CSS class .map-sparkle — slow stagger blink,
+ * disabled under prefers-reduced-motion. */
+function SparkleField() {
+  const sparkles: Array<{ cx: number; cy: number; size?: number; phase?: number }> = [
+    { cx: 12, cy: 14, size: 0.35, phase: 0 },
+    { cx: 44, cy: 12.5, size: 0.4, phase: 0.7 },
+    { cx: 72, cy: 14, size: 0.35, phase: 1.4 },
+    { cx: 96, cy: 13, size: 0.4, phase: 2.1 },
+    // Two over the UT Tower (above its observation deck).
+    { cx: 53, cy: 26, size: 0.35, phase: 0.4 },
+    { cx: 56.5, cy: 23, size: 0.35, phase: 1.6 },
+    // One over the Saturn V nose cone.
+    { cx: 109.5, cy: 21, size: 0.4, phase: 0.9 },
+    // Two over the Capitol dome / statue.
+    { cx: 132, cy: 8, size: 0.4, phase: 1.1 },
+    { cx: 127, cy: 13, size: 0.35, phase: 2.4 },
+  ]
+  return (
+    <g aria-hidden="true">
+      {sparkles.map((s, i) => (
+        <Sparkle
+          key={i}
+          cx={s.cx}
+          cy={s.cy}
+          size={s.size ?? 0.4}
+          phase={s.phase ?? 0}
+        />
+      ))}
+    </g>
+  )
+}
+
+function Sparkle({
+  cx,
+  cy,
+  size,
+  phase,
+}: {
+  cx: number
+  cy: number
+  size: number
+  phase: number
+}) {
+  const center = '#ffffff'
+  const arm = '#fff5e1'
+  return (
+    <g
+      className="map-sparkle"
+      style={{ animationDelay: `${phase}s` }}
+    >
+      <rect x={cx - size / 2} y={cy - size / 2} width={size} height={size} fill={center} />
+      <rect x={cx - size / 2} y={cy - size * 1.6} width={size} height={size} fill={arm} />
+      <rect x={cx - size / 2} y={cy + size * 0.6} width={size} height={size} fill={arm} />
+      <rect x={cx - size * 1.6} y={cy - size / 2} width={size} height={size} fill={arm} />
+      <rect x={cx + size * 0.6} y={cy - size / 2} width={size} height={size} fill={arm} />
+    </g>
+  )
+}
+
+/* Two restrained pink hearts — a found motif, not a stamp. One tucked in
+ * the top-right pastel sky, one near a bottom corner of the map. */
+function HeartTwinkles() {
+  return (
+    <g aria-hidden="true">
+      <Heart cx={107.5} cy={3.6} />
+      <Heart cx={3.6} cy={56.4} />
+    </g>
+  )
+}
+
+function Heart({ cx, cy }: { cx: number; cy: number }) {
+  const body = '#ff9ebe'
+  const deep = '#e36a8c'
+  const shine = '#ffd0dc'
+  const p = 0.32 // pixel size
+  return (
+    <g>
+      {/* Two top lobes */}
+      <rect x={cx - p * 2.5} y={cy - p * 1.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 1.5} y={cy - p * 2.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 0.5} y={cy - p * 1.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 0.5} y={cy - p * 2.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 1.5} y={cy - p * 1.5} width={p} height={p} fill={body} />
+      {/* Middle row */}
+      <rect x={cx - p * 2.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 1.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 0.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 0.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 1.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      {/* Lower taper */}
+      <rect x={cx - p * 1.5} y={cy + p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 0.5} y={cy + p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 0.5} y={cy + p * 0.5} width={p} height={p} fill={body} />
+      {/* Point */}
+      <rect x={cx - p * 0.5} y={cy + p * 1.5} width={p} height={p} fill={body} />
+      {/* Highlight pixel */}
+      <rect x={cx - p * 1.5} y={cy - p * 1.5} width={p} height={p} fill={shine} />
+      {/* Deep shadow pixel for definition */}
+      <rect x={cx + p * 1.5} y={cy + p * 0.5} width={p} height={p} fill={deep} />
+    </g>
   )
 }
 
@@ -936,9 +1173,9 @@ function DottedPath() {
           y={d.y - 0.5}
           width={1}
           height={1}
-          fill="#fff7c2"
-          stroke="#7a5326"
-          strokeWidth={0.15}
+          fill="#ffe4d2"
+          stroke="#c47b8c"
+          strokeWidth={0.18}
         />
       ))}
     </g>

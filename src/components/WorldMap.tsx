@@ -116,6 +116,50 @@ export function WorldMap() {
 
   return (
     <div className="world">
+      {/* Ambient page-chrome decoration: a handful of sakura flecks +
+          sparkle pixels scattered in the corners of the viewport so the
+          pastel-sky vibe extends beyond the map's bezel. Fixed-positioned,
+          pointer-events: none, hidden from a11y tree. */}
+      <div className="chrome-deco" aria-hidden="true">
+        <span className="chrome-sakura" style={{ top: '6px', left: '6px' }} />
+        <span
+          className="chrome-sakura is-deeper"
+          style={{ top: '6px', right: '6px' }}
+        />
+        <span
+          className="chrome-sakura"
+          style={{ top: '32%', left: '4px' }}
+        />
+        <span
+          className="chrome-sakura"
+          style={{ top: '54%', right: '4px' }}
+        />
+        <span
+          className="chrome-sakura is-deeper"
+          style={{ bottom: '6px', left: '6px' }}
+        />
+        <span
+          className="chrome-sakura"
+          style={{ bottom: '6px', right: '6px' }}
+        />
+        <span
+          className="chrome-sparkle"
+          style={{ top: '4%', left: '14%', animationDelay: '0.4s' }}
+        />
+        <span
+          className="chrome-sparkle"
+          style={{ top: '4%', right: '20%', animationDelay: '1.6s' }}
+        />
+        <span
+          className="chrome-sparkle"
+          style={{ bottom: '4%', left: '20%', animationDelay: '0.9s' }}
+        />
+        <span
+          className="chrome-sparkle"
+          style={{ bottom: '4%', right: '14%', animationDelay: '2.2s' }}
+        />
+      </div>
+
       <header className="world__header">
         <div className="world__titles">
           <h1 className="world__title">Xeo&apos;s Capsule</h1>

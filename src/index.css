@@ -7,6 +7,18 @@
   --ink: #2a1a0c;
   --shadow: rgba(0, 0, 0, 0.35);
   --pixel-font: 'Press Start 2P', system-ui, monospace;
+
+  /* Pastel sky band stack — same 5-stop palette as <SkyBands /> in
+   * MapBackground.tsx. Used as a stepped (hard-stop) page background so
+   * the world map visually merges with its surroundings instead of
+   * floating in a cream window. */
+  --sky-band-1: #ffd0e0; /* sakura pink, top */
+  --sky-band-2: #ffdcea; /* lighter sakura */
+  --sky-band-3: #ffe4d2; /* peach horizon */
+  --sky-band-4: #ffeacc; /* warm cream */
+  --sky-band-5: #fff0d8; /* pale buttercream */
+  --warm-ink: #3a1f10;   /* readable on pastels, no white-on-blue glare */
+  --cream-glow: #fff5e1; /* 1-px text-shadow for pixel legibility */
 }
 
 * {
@@ -24,7 +36,22 @@ body,
 body {
   font-family: var(--pixel-font);
   color: var(--ink);
-  background: linear-gradient(180deg, var(--sky-deep) 0%, var(--sky) 60%, #b6e0ff 100%);
+  /* Hard-stop band stack: no smooth gradient, 16-bit budget. The viewport
+   * reads as one continuous pastel sky → peach → cream so the map's own
+   * SkyBands feel like part of the same scene. */
+  background: linear-gradient(
+    to bottom,
+    var(--sky-band-1) 0%,
+    var(--sky-band-1) 12%,
+    var(--sky-band-2) 12%,
+    var(--sky-band-2) 24%,
+    var(--sky-band-3) 24%,
+    var(--sky-band-3) 50%,
+    var(--sky-band-4) 50%,
+    var(--sky-band-4) 75%,
+    var(--sky-band-5) 75%,
+    var(--sky-band-5) 100%
+  );
   background-attachment: fixed;
   image-rendering: pixelated;
   -webkit-font-smoothing: none;
@@ -47,8 +74,10 @@ body {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  color: #fff;
-  text-shadow: 2px 2px 0 #1a3a6a;
+  /* Warm dark ink + 1-px cream highlight instead of white-on-blue, so the
+   * title reads cleanly against the new sakura band. */
+  color: var(--warm-ink);
+  text-shadow: 1px 1px 0 var(--cream-glow);
 }
 
 .world__titles {
@@ -123,9 +152,14 @@ kbd {
   margin: 0 auto;
   aspect-ratio: 140 / 60;
   border: 4px solid var(--ink);
-  box-shadow: 0 8px 0 var(--shadow), inset 0 0 0 2px #fff7c2;
+  /* Inset highlight nudged from cream-yellow to a soft sakura-cream so the
+   * bezel reads as part of the pastel-sky family. Drop-shadow stays dark
+   * — the map is still a "screen" sitting on the page. */
+  box-shadow: 0 8px 0 var(--shadow), inset 0 0 0 2px var(--sky-band-3);
   overflow: hidden;
-  background: #6cb9ff;
+  /* Map content fully covers this; the dusty-rose fallback only matters
+   * during the first paint, but it harmonizes if it ever peeks. */
+  background: var(--sky-band-2);
 }
 
 .map-bg,
@@ -206,18 +240,79 @@ kbd {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .map-sparkle {
+  .map-sparkle,
+  .chrome-sparkle {
     animation: none;
     opacity: 0.8;
   }
+}
+
+/* Page-chrome ambient decoration -------------------------------------- *
+ *
+ * A handful of fixed-position pixel sprites scattered around the header
+ * and footer so the cute sakura/sparkle vibe doesn't stop at the bezel.
+ * Pure CSS box-shadow art so we don't need extra SVGs or images.
+ *
+ * .chrome-deco is `pointer-events: none` and lives behind the modal
+ * (z-index 0) so it never interferes with clicks or covers the dialog.
+ */
+.chrome-deco {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.chrome-deco > span {
+  position: absolute;
+  display: block;
+}
+
+/* 5-pixel sakura cross: cream center + 4 petal blocks via box-shadow.
+ * Matches the in-map <Sakura /> shape, scaled up to ~12px so it reads
+ * comfortably outside the SVG. */
+.chrome-sakura {
+  width: 4px;
+  height: 4px;
+  background: var(--cream-glow);
+  box-shadow:
+    -4px 0 0 #ffb7c8,
+    4px 0 0 #ffb7c8,
+    0 -4px 0 #ffb7c8,
+    0 4px 0 #ffb7c8;
+}
+
+.chrome-sakura.is-deeper {
+  box-shadow:
+    -4px 0 0 #ff9ebe,
+    4px 0 0 #ff9ebe,
+    0 -4px 0 #ff9ebe,
+    0 4px 0 #ff9ebe;
+}
+
+/* 5-pixel sparkle: bright white center + 4 cream arms. Reuses the same
+ * mapSparkle blink so the ambient sparkles stay phase-locked with the
+ * ones inside the map. */
+.chrome-sparkle {
+  width: 3px;
+  height: 3px;
+  background: #ffffff;
+  box-shadow:
+    -5px 0 0 var(--cream-glow),
+    5px 0 0 var(--cream-glow),
+    0 -5px 0 var(--cream-glow),
+    0 5px 0 var(--cream-glow);
+  animation: mapSparkle 3.6s steps(2, end) infinite;
 }
 
 /* Footer ---------------------------------------------------------------- */
 
 .world__footer {
   text-align: center;
-  color: #fff;
-  text-shadow: 1px 1px 0 #1a3a6a;
+  /* Same warm-ink + cream-glow treatment as the header so both ends of
+   * the page chrome read cohesively against the cream/peach band. */
+  color: var(--warm-ink);
+  text-shadow: 1px 1px 0 var(--cream-glow);
   font-size: 9px;
   line-height: 1.6;
 }
@@ -233,7 +328,10 @@ kbd {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(8, 16, 32, 0.7);
+  /* Warm plum-tinted dim instead of cool slate — harmonizes with the new
+   * pastel sky behind it so the modal still feels like a punched-out
+   * overlay, but doesn't feel "stamped from a different game". */
+  background: rgba(40, 20, 30, 0.55);
   display: grid;
   place-items: center;
   padding: 16px;

@@ -660,68 +660,409 @@ function HollywoodSign({ baseX, baseY }: { baseX: number; baseY: number }) {
   )
 }
 
-/* ─────────────────────────  Region 5: Seoul  ──────────────────────────── */
+/* ─────────────────────────  Region 5: Seoul  ──────────────────────────── *
+ * Composition:
+ *   • Distant Namsan-feeling hill silhouette behind the skyline.
+ *   • A cluster of 6 dusk-navy high-rises with lit-window grids
+ *     (butter-yellow + cool-teal mix), some windows softly pulsing.
+ *   • One slim, tapering Lotte-World-style super-tall on the right edge.
+ *   • Foreground anchor: Gwanghwamun palace gate — three arched
+ *     stone gateways, red columns, dancheong-painted band, multi-tier
+ *     pavilion roof with up-turned eaves in ceramic teal.
+ *   • A pair of small magenta / teal hangul-impression neon roof signs.
+ *   • A couple extra sparkle pixels reinforcing "city of lights."
+ *
+ * Footprint stays inside x=80..96. The level-5 coin sits at (84,14) with
+ * its era label flag down to y≈21.8 — every building top is kept at
+ * y ≥ 23 so the coin and label remain unobstructed and the dotted path
+ * (which crosses the region around y=14..17) stays clear.
+ */
 function Seoul() {
   return (
     <g>
-      <rect x="80" y="40" width="16" height="20" fill="#6a4f36" />
-      <rect x="80" y="38" width="16" height="2" fill="url(#rock)" />
-      <SeoulMountain cx={84} baseY={38} h={18} />
-      <SeoulMountain cx={92} baseY={38} h={26} />
+      {/* Inline keyframes for the soft staggered window pulse — scoped via
+          .seoul-lit-* class names so they don't collide with anything else.
+          Honors prefers-reduced-motion. */}
+      <style>{`
+        @keyframes seoulWinPulse {
+          0%, 100% { opacity: 1; }
+          50%      { opacity: 0.35; }
+        }
+        .seoul-lit-warm { animation: seoulWinPulse 3.2s ease-in-out infinite; }
+        .seoul-lit-cool { animation: seoulWinPulse 4.1s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .seoul-lit-warm, .seoul-lit-cool { animation: none; opacity: 0.95; }
+        }
+      `}</style>
 
-      <rect x="80" y="32" width="16" height="6" fill="url(#grass)" />
-      <Hanok baseX={82} baseY={32} />
-      <NSeoulTower baseX={91} baseY={32} />
+      {/* Plaza floor + dark stone curb under the skyline. Same dark slate
+          palette as Houston so the lit windows pop, but kept below the
+          horizon line so the pastel sky still owns the upper third. */}
+      <rect x="80" y="44" width="16" height="14" fill="url(#cityFloor)" />
+      <rect x="80" y="58" width="16" height="2" fill="#22222a" />
+      <rect x="80" y="44" width="16" height="0.4" fill="#1a1830" />
+
+      {/* Distant Namsan-feeling hill silhouette, deep dusk-purple, sits
+          behind the skyline on the right where the Lotte tower stands. */}
+      <polygon
+        points="80,44 80,40 84,38 88,36 92,34.5 96,33.5 96,44"
+        fill="#3a2a5a"
+        opacity="0.85"
+      />
+      <polygon
+        points="80,44 80,42 86,40.5 92,39 96,38 96,44"
+        fill="#2e2348"
+      />
+
+      {/* ── Skyline cluster (back row first, gate goes on top later) ── */}
+      {/* Left flank, fully visible to the left of the gate. */}
+      <SeoulHighrise baseX={80.0} baseY={44} w={1.6} h={14} seed={1} />
+      {/* Three short towers BEHIND the gate — only tops poke above the
+          gate roof (which sits at y≈37). Bodies stop just inside the gate
+          roof shadow so we don't waste primitives on hidden geometry. */}
+      <SeoulHighrise baseX={82.5} baseY={37.4} w={1.3} h={10} seed={2} />
+      <SeoulHighrise baseX={85.0} baseY={37.4} w={1.4} h={12} seed={3} />
+      <SeoulHighrise baseX={86.8} baseY={37.4} w={1.2} h={8} seed={4} />
+      {/* Right flank, fully visible to the right of the gate. */}
+      <SeoulHighrise baseX={89.6} baseY={44} w={1.6} h={15} seed={5} />
+      <SeoulHighrise baseX={91.6} baseY={44} w={1.4} h={12} seed={6} />
+      {/* Slim, tapering super-tall — Lotte-World-style finger of the
+          skyline. Anchored at the right edge of the region. */}
+      <LotteWorldTower baseX={93.6} baseY={44} />
+
+      {/* Hangul-impression neon signs on building roofs. Stylised blocky
+          shapes only — no real Unicode (system font would fight the
+          pixel-art style). */}
+      <NeonSign x={80.0} y={29.2} color="#ff3aa3" />
+      <NeonSign x={89.7} y={28.2} color="#3ad4d4" />
+
+      {/* Foreground hero: Gwanghwamun palace gate. Drawn last so the
+          three arched gateways and the curved-eave pavilion roof read
+          cleanly in front of the skyline cluster. */}
+      <Gwanghwamun baseX={82} baseY={46} />
+
+      {/* "City of lights" sparkles — tiny extra twinkles that reuse the
+          existing .map-sparkle hook so they stay phase-locked with the
+          rest of the map. Two only, kept compact on building roofs. */}
+      <Sparkle cx={94.5} cy={22.6} size={0.35} phase={0.3} />
+      <Sparkle cx={86.0} cy={36.4} size={0.3} phase={1.8} />
     </g>
   )
 }
 
-function SeoulMountain({ cx, baseY, h }: { cx: number; baseY: number; h: number }) {
-  const w = h * 0.9
-  const top = baseY - h
+/* High-rise apartment block — dusk-navy body with a deterministic grid of
+ * lit windows in butter-yellow + cool-teal + dark. A pinch of windows in
+ * the grid carry the .seoul-lit-warm / .seoul-lit-cool classes so they
+ * gently pulse (auto-disabled under prefers-reduced-motion). */
+function SeoulHighrise({
+  baseX,
+  baseY,
+  w,
+  h,
+  seed,
+}: {
+  baseX: number
+  baseY: number
+  w: number
+  h: number
+  seed: number
+}) {
+  const body = '#2a253d'
+  const cap = '#15121f'
+  const rim = '#3a2a5a'
+  const warm = '#ffd97a'
+  const cool = '#7adcd0'
+  const dark = '#1a1830'
+
+  const winW = 0.32
+  const winH = 0.42
+  const gapX = 0.78
+  const gapY = 1.1
+  const padX = 0.26
+  const padTop = 0.9
+  const padBot = 0.5
+
+  const cols = Math.max(1, Math.floor((w - 2 * padX + winW) / gapX))
+  const rows = Math.max(2, Math.floor((h - padTop - padBot) / gapY))
+
+  const windows: React.ReactNode[] = []
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const k = (r * 7 + c * 11 + seed * 13) % 17
+      let fill: string
+      let cls: string | undefined
+      let delay = 0
+      if (k <= 6) {
+        fill = warm
+        if (k % 3 === 0) {
+          cls = 'seoul-lit-warm'
+          delay = ((seed * 17 + r * 3 + c * 5) % 31) / 10
+        }
+      } else if (k <= 12) {
+        fill = cool
+        if (k % 4 === 0) {
+          cls = 'seoul-lit-cool'
+          delay = ((seed * 11 + r * 5 + c * 7) % 29) / 10
+        }
+      } else {
+        fill = dark
+      }
+      const wx = baseX + padX + c * gapX
+      const wy = baseY - h + padTop + r * gapY
+      windows.push(
+        <rect
+          key={`${seed}-w-${r}-${c}`}
+          x={wx}
+          y={wy}
+          width={winW}
+          height={winH}
+          fill={fill}
+          className={cls}
+          style={cls ? { animationDelay: `${delay}s` } : undefined}
+        />
+      )
+    }
+  }
+
   return (
     <g>
-      <polygon
-        points={`${cx - w},${baseY} ${cx},${top} ${cx + w},${baseY}`}
-        fill="url(#rock)"
-      />
-      <polygon
-        points={`${cx - w * 0.45},${baseY - h * 0.55} ${cx},${top} ${cx + w * 0.45},${baseY - h * 0.55} ${cx},${baseY - h * 0.7}`}
-        fill="#ffffff"
+      <rect x={baseX} y={baseY - h} width={w} height={h} fill={body} />
+      <rect x={baseX} y={baseY - h} width={w} height={0.4} fill={cap} />
+      <rect x={baseX} y={baseY - h + 0.4} width={0.18} height={h - 0.4} fill={rim} />
+      {windows}
+    </g>
+  )
+}
+
+/* Lotte World Tower-ish slim super-tall: stepped, gently tapering body
+ * with a single column of lit windows running up the spine and a short
+ * antenna pulse on top. */
+function LotteWorldTower({
+  baseX,
+  baseY,
+}: {
+  baseX: number
+  baseY: number
+}) {
+  const body = '#2e2348'
+  const rim = '#43345f'
+  const cap = '#15121f'
+  const warm = '#ffd97a'
+  const cool = '#7adcd0'
+  const tip = '#3ad4d4'
+
+  // Seven 3-unit stacked sections, each a hair narrower than the one
+  // below — this gives the famous Lotte taper without a real polygon.
+  const sections = [
+    { y: baseY - 3, w: 1.4 },
+    { y: baseY - 6, w: 1.3 },
+    { y: baseY - 9, w: 1.2 },
+    { y: baseY - 12, w: 1.1 },
+    { y: baseY - 15, w: 1.0 },
+    { y: baseY - 18, w: 0.9 },
+    { y: baseY - 21, w: 0.8 },
+  ]
+
+  const cx = baseX + 0.7
+
+  return (
+    <g>
+      {sections.map((s, i) => (
+        <rect
+          key={`lt-sec-${i}`}
+          x={cx - s.w / 2}
+          y={s.y}
+          width={s.w}
+          height={3}
+          fill={body}
+        />
+      ))}
+      {/* Spine highlight — one-pixel column on the left side of every
+          section to read as a stepped pixel-art rim. */}
+      {sections.map((s, i) => (
+        <rect
+          key={`lt-rim-${i}`}
+          x={cx - s.w / 2}
+          y={s.y}
+          width={0.16}
+          height={3}
+          fill={rim}
+        />
+      ))}
+      {/* Top cap. */}
+      <rect x={cx - 0.4} y={baseY - 21} width={0.8} height={0.4} fill={cap} />
+
+      {/* Single column of lit windows up the spine. Alternate warm/cool. */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        const wy = baseY - 2 - i * 1.6
+        const isCool = i % 3 === 0
+        const fill = isCool ? cool : warm
+        return (
+          <rect
+            key={`lt-win-${i}`}
+            x={cx - 0.18}
+            y={wy}
+            width={0.36}
+            height={0.5}
+            fill={fill}
+            className={isCool ? 'seoul-lit-cool' : 'seoul-lit-warm'}
+            style={{ animationDelay: `${(i * 0.27) % 3.2}s` }}
+          />
+        )
+      })}
+
+      {/* Antenna spire + pulsing tip. Tip uses the existing .map-sparkle
+          hook so it phase-locks with the other sparkles on the map. */}
+      <rect x={cx - 0.08} y={baseY - 22.4} width={0.16} height={1.4} fill="#9aa0ab" />
+      <rect
+        x={cx - 0.16}
+        y={baseY - 22.6}
+        width={0.32}
+        height={0.32}
+        fill={tip}
+        className="map-sparkle"
+        style={{ animationDelay: '1.3s' }}
       />
     </g>
   )
 }
 
-function Hanok({ baseX, baseY }: { baseX: number; baseY: number }) {
+/* Stylised hangul-impression neon sign: two stacked geometric blocks, no
+ * real Unicode. Reads as a glowing rooftop billboard at this scale. */
+function NeonSign({
+  x,
+  y,
+  color,
+}: {
+  x: number
+  y: number
+  color: string
+}) {
   return (
     <g>
-      <rect x={baseX} y={baseY - 2.6} width={4.5} height={2.6} fill="#e8c34a" />
-      <rect x={baseX + 1.6} y={baseY - 2.4} width={1.2} height={2.4} fill="#7a3500" />
-      <polygon
-        points={`${baseX - 0.8},${baseY - 2.6} ${baseX + 5.3},${baseY - 2.6} ${baseX + 4.5},${baseY - 4} ${baseX},${baseY - 4}`}
-        fill="#1f3a3a"
-      />
-      <polygon
-        points={`${baseX - 1.2},${baseY - 2.6} ${baseX - 0.4},${baseY - 2.6} ${baseX - 0.2},${baseY - 3.4} ${baseX - 0.6},${baseY - 3.4}`}
-        fill="#1f3a3a"
-      />
-      <polygon
-        points={`${baseX + 4.9},${baseY - 2.6} ${baseX + 5.7},${baseY - 2.6} ${baseX + 5.1},${baseY - 3.4} ${baseX + 4.7},${baseY - 3.4}`}
-        fill="#1f3a3a"
-      />
+      {/* Top row: two squares side by side ("ㅇㅏ"-flavoured silhouette). */}
+      <rect x={x} y={y} width={0.5} height={0.5} fill={color} />
+      <rect x={x + 0.7} y={y} width={0.4} height={0.5} fill={color} />
+      {/* Bottom row: a single connecting bar. */}
+      <rect x={x} y={y + 0.65} width={1.1} height={0.32} fill={color} />
+      {/* Tiny attachment post + base dot on the roof. */}
+      <rect x={x + 0.45} y={y + 1} width={0.18} height={0.4} fill="#7a7a82" />
     </g>
   )
 }
 
-function NSeoulTower({ baseX, baseY }: { baseX: number; baseY: number }) {
+/* Gwanghwamun — the Gyeongbokgung-palace main gate. Built bottom-up:
+ *   1) Stone base with three arched gateways and a top capstone.
+ *   2) A wood-balcony band with red columns + dancheong-painted band.
+ *   3) Multi-tier pavilion roof in ceramic teal with up-turned eaves
+ *      stepped in pixel-art and a finial post on the roof crest.
+ *
+ * baseY is the ground line under the gate; the gate rises *upward* from
+ * there (matching how Capitol / UTTower are anchored in this file). */
+function Gwanghwamun({
+  baseX,
+  baseY,
+}: {
+  baseX: number
+  baseY: number
+}) {
+  const stone = '#d6c7a4'
+  const stoneDk = '#a89878'
+  const stonePlinth = '#8c7a5a'
+  const arch = '#1f1a2a'
+  const wood = '#7a3a1d'
+  const woodDk = '#4a2010'
+  const colRed = '#a02b2e'
+  const colRedHi = '#c44a3e'
+  const dcGold = '#e0a234'
+  const dcRed = '#a02b2e'
+  const dcBlue = '#3a6e8c'
+  const roof = '#3a6e8c'
+  const roofHi = '#5a98b4'
+  const roofShade = '#1f3848'
+  const finial = '#e0a234'
+
+  // ── 1) Stone base ────────────────────────────────────────────────────
+  // Body (x=82..88, y=42..46). 6 wide × 4 tall.
+  const baseW = 6
+  const x = baseX // 82
+  const y = baseY // 46
+
   return (
     <g>
-      <rect x={baseX - 0.2} y={baseY - 6} width={0.4} height={6} fill="#bbbbbb" />
-      <rect x={baseX - 0.6} y={baseY - 7.4} width={1.2} height={1.4} fill="#bbbbbb" />
-      <rect x={baseX - 1} y={baseY - 8.2} width={2} height={0.8} fill="#3a78c4" />
-      <rect x={baseX - 0.1} y={baseY - 9.4} width={0.2} height={1.2} fill="#bbbbbb" />
-      <circle cx={baseX} cy={baseY - 9.6} r={0.3} fill="#d63b2c" />
+      {/* Base body */}
+      <rect x={x} y={y - 4} width={baseW} height={4} fill={stone} />
+      <rect x={x} y={y - 4} width={baseW} height={0.5} fill={stoneDk} />
+      <rect x={x} y={y - 0.5} width={baseW} height={0.5} fill={stonePlinth} />
+
+      {/* Three arched gateways. Center is taller, sides are shorter. */}
+      {/* Center arch */}
+      <rect x={x + 2.6} y={y - 2.8} width={0.8} height={2.8} fill={arch} />
+      <rect x={x + 2.7} y={y - 3.0} width={0.6} height={0.2} fill={arch} />
+      <rect x={x + 2.85} y={y - 3.2} width={0.3} height={0.2} fill={arch} />
+      {/* Left arch */}
+      <rect x={x + 0.7} y={y - 2.2} width={0.7} height={2.2} fill={arch} />
+      <rect x={x + 0.8} y={y - 2.4} width={0.5} height={0.2} fill={arch} />
+      {/* Right arch */}
+      <rect x={x + 4.6} y={y - 2.2} width={0.7} height={2.2} fill={arch} />
+      <rect x={x + 4.7} y={y - 2.4} width={0.5} height={0.2} fill={arch} />
+
+      {/* A few stone-block grout lines so the base reads as masonry. */}
+      <rect x={x} y={y - 3.0} width={baseW} height={0.12} fill={stoneDk} opacity="0.55" />
+      <rect x={x} y={y - 1.5} width={baseW} height={0.12} fill={stoneDk} opacity="0.55" />
+      <rect x={x + 2.0} y={y - 4} width={0.12} height={1} fill={stoneDk} opacity="0.55" />
+      <rect x={x + 4.0} y={y - 4} width={0.12} height={1} fill={stoneDk} opacity="0.55" />
+
+      {/* ── 2) Wood-balcony band sitting on the stone base ──────────── */}
+      {/* Band body (x=81.5..88.5, y=40..42). Slightly wider than the stone. */}
+      <rect x={x - 0.5} y={y - 6} width={baseW + 1} height={2} fill={wood} />
+      <rect x={x - 0.5} y={y - 6} width={baseW + 1} height={0.3} fill={woodDk} />
+      <rect x={x - 0.5} y={y - 4.3} width={baseW + 1} height={0.3} fill={woodDk} />
+
+      {/* Four red columns dropped through the wood band. */}
+      {[0.2, 1.9, 4.1, 5.8].map((dx, i) => (
+        <g key={`col-${i}`}>
+          <rect x={x + dx} y={y - 6} width={0.4} height={2} fill={colRed} />
+          <rect x={x + dx} y={y - 6} width={0.12} height={2} fill={colRedHi} />
+        </g>
+      ))}
+
+      {/* Dancheong painted band — alternating red/gold/blue pixel-blocks
+          across the top of the wood balcony. Six chunks for legibility. */}
+      <rect x={x - 0.5} y={y - 6.3} width={baseW + 1} height={0.3} fill={dcGold} />
+      <rect x={x + 0.0} y={y - 6.6} width={1.0} height={0.3} fill={dcRed} />
+      <rect x={x + 1.1} y={y - 6.6} width={1.0} height={0.3} fill={dcBlue} />
+      <rect x={x + 2.2} y={y - 6.6} width={1.0} height={0.3} fill={dcRed} />
+      <rect x={x + 3.3} y={y - 6.6} width={1.0} height={0.3} fill={dcBlue} />
+      <rect x={x + 4.4} y={y - 6.6} width={1.0} height={0.3} fill={dcRed} />
+
+      {/* ── 3) Pavilion roof ────────────────────────────────────────── */}
+      {/* Main roof body (x=81..89, y=37..39.6). 8 wide × 2.6 tall. */}
+      <rect x={x - 1} y={y - 9} width={baseW + 2} height={2.4} fill={roof} />
+      {/* Top highlight strip + bottom shadow strip. */}
+      <rect x={x - 1} y={y - 9} width={baseW + 2} height={0.3} fill={roofHi} />
+      <rect x={x - 1} y={y - 6.9} width={baseW + 2} height={0.3} fill={roofShade} />
+      {/* Horizontal tile ridges across the roof body. */}
+      <rect x={x - 1} y={y - 8.3} width={baseW + 2} height={0.12} fill={roofShade} opacity="0.6" />
+      <rect x={x - 1} y={y - 7.6} width={baseW + 2} height={0.12} fill={roofShade} opacity="0.6" />
+
+      {/* Up-turned eaves — stepped pixel-art curls at each end of the
+          roof. Three step-pixels per side curling up + outward. */}
+      {/* Left curl */}
+      <rect x={x - 1.4} y={y - 9} width={0.4} height={0.4} fill={roof} />
+      <rect x={x - 1.7} y={y - 9.3} width={0.4} height={0.4} fill={roof} />
+      <rect x={x - 1.95} y={y - 9.6} width={0.35} height={0.4} fill={roof} />
+      <rect x={x - 1.95} y={y - 9.6} width={0.35} height={0.15} fill={roofHi} />
+      {/* Right curl (mirrored) */}
+      <rect x={x + baseW + 1.0} y={y - 9} width={0.4} height={0.4} fill={roof} />
+      <rect x={x + baseW + 1.3} y={y - 9.3} width={0.4} height={0.4} fill={roof} />
+      <rect x={x + baseW + 1.6} y={y - 9.6} width={0.35} height={0.4} fill={roof} />
+      <rect x={x + baseW + 1.6} y={y - 9.6} width={0.35} height={0.15} fill={roofHi} />
+
+      {/* Roof crest / finial — small post + gold ball at the peak. */}
+      <rect x={x + baseW / 2 - 0.1} y={y - 9.9} width={0.2} height={0.9} fill={woodDk} />
+      <rect x={x + baseW / 2 - 0.25} y={y - 10.1} width={0.5} height={0.3} fill={finial} />
+      <rect x={x + baseW / 2 - 0.1} y={y - 10.4} width={0.2} height={0.3} fill={finial} />
     </g>
   )
 }

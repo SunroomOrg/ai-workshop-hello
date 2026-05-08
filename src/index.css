@@ -158,11 +158,11 @@ kbd {
 
 .level-node.is-locked {
   cursor: not-allowed;
-  filter: grayscale(0.6) brightness(0.85);
+  filter: brightness(0.94);
 }
 
 .level-node.is-locked:hover {
-  filter: grayscale(0.6) brightness(0.85) drop-shadow(0 0 2px #ffffff80);
+  filter: brightness(0.94) drop-shadow(0 0 2px #ffffff80);
 }
 
 .level-node.is-cleared {

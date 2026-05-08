@@ -54,8 +54,8 @@ export function LevelNode({
 
       <circle
         r={half}
-        fill={isLocked ? '#7a7a7a' : level.accent ?? '#e8c34a'}
-        stroke="#7a5326"
+        fill={isLocked ? '#c4c8d0' : level.accent ?? '#e8c34a'}
+        stroke={isLocked ? '#5b606b' : '#7a5326'}
         strokeWidth={0.5}
       />
       <circle r={half - 1} fill="#fff7c2" opacity={isLocked ? 0.15 : 0.5} />
@@ -145,16 +145,36 @@ function StarGlyph() {
 }
 
 function PadlockGlyph() {
+  // Cool gunmetal palette — chibi shape, tighter footprint than before so the
+  // lock reads as one snug symbol inside the coin. Colors inlined to match the
+  // way StarGlyph/coin colors live directly in the SVG.
+  const body = '#a3a8b3'
+  const stroke = '#4a4f5a'
+  const shine = '#d8dce3'
+  const keyhole = '#2a1a0c'
   return (
     <g style={{ pointerEvents: 'none' }}>
-      <rect x={-1.4} y={-0.6} width={2.8} height={2.6} fill="#3a2410" />
       <path
-        d="M -0.9 -0.6 V -1.6 a 0.9 0.9 0 0 1 1.8 0 V -0.6"
+        d="M -0.7 -0.4 V -1.3 a 0.7 0.7 0 0 1 1.4 0 V -0.4"
         fill="none"
-        stroke="#3a2410"
-        strokeWidth={0.5}
+        stroke={stroke}
+        strokeWidth={0.45}
+        strokeLinecap="square"
       />
-      <rect x={-0.2} y={0.4} width={0.4} height={1} fill="#fff7c2" />
+      <rect
+        x={-1.2}
+        y={-0.4}
+        width={2.4}
+        height={2.2}
+        rx={0.3}
+        ry={0.3}
+        fill={body}
+        stroke={stroke}
+        strokeWidth={0.4}
+      />
+      <rect x={-0.95} y={-0.15} width={0.4} height={0.4} fill={shine} />
+      <circle cx={0} cy={0.45} r={0.3} fill={keyhole} />
+      <rect x={-0.13} y={0.45} width={0.26} height={0.85} fill={keyhole} />
     </g>
   )
 }

@@ -884,6 +884,12 @@ export function BossRun({
 
   const beginRun = useCallback(() => {
     stateRef.current = makeInitialState(config, performance.now())
+    // Drop focus off the Begin button so a subsequent Space/Enter doesn't
+    // re-activate something underneath. We move focus to body explicitly.
+    if (typeof document !== 'undefined') {
+      const active = document.activeElement as HTMLElement | null
+      active?.blur()
+    }
     setPhase('running')
   }, [config])
 
@@ -943,13 +949,29 @@ export function BossRun({
       }
     }
     const onKeyUp = (e: KeyboardEvent) => {
+      const p = phaseRef.current
+      const consumesGameKeys = p === 'running' || p === 'paused'
       if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        // Without preventDefault here, a Space-up on a focused button (e.g.
+        // the Skip link, or a stale-focused footer button) would activate it.
+        if (consumesGameKeys) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
         jumpHeldRef.current = false
       }
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        if (consumesGameKeys) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
         leftHeldRef.current = false
       }
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        if (consumesGameKeys) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
         rightHeldRef.current = false
       }
     }

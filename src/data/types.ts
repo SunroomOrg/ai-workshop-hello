@@ -132,6 +132,13 @@ export interface Obstacle {
   activeMs?: number
   /** Per-obstacle phase offset in ms, so multiple projectiles aren't synced. */
   phaseMs?: number
+  /**
+   * Optional telegraph window in ms preceding the active phase. During
+   * windup the obstacle is drawn (often as a faded / charging silhouette)
+   * but is **not** collidable yet — used for paparazzi flashbulbs and
+   * klieg-light sweeps in World 4.
+   */
+  windupMs?: number
 }
 
 /** Static platforms used by the platformer (world 7). */

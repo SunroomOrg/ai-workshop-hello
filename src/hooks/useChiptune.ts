@@ -32,7 +32,12 @@ export function useChiptune(muted: boolean) {
   const mutedRef = useRef(muted)
 
   // Keep the ref in sync so the playClick/secret callbacks always read fresh.
-  mutedRef.current = muted
+  // Ref writes happen in an effect (not during render) to satisfy
+  // `react-hooks/refs`; the playback callbacks read `mutedRef.current`
+  // lazily so a one-frame lag here is inaudible in practice.
+  useEffect(() => {
+    mutedRef.current = muted
+  }, [muted])
 
   /** Lazily build the AudioContext + signal chain on first user gesture. */
   const ensureContext = () => {

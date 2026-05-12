@@ -223,6 +223,7 @@ export function WorldMap() {
       </footer>
 
       <LevelModal
+        key={openId ?? 'closed'}
         level={openLevel}
         cleared={openLevel ? cleared.has(openLevel.id) : false}
         onClear={() => openLevel && markCleared(openLevel.id)}

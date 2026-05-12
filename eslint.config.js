@@ -6,7 +6,10 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // The `video/` directory is a separate Remotion sub-project with its
+  // own eslint.config.mjs; keep it out of the root lint scope so the
+  // two configs don't fight each other.
+  globalIgnores(['dist', 'video/**']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

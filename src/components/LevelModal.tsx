@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { RUNS } from '../data/runs'
 import type { Level, Media, MediaPhoto } from '../data/types'
 import { BossRun } from './BossRun'
-import { QuizSection } from './QuizSection'
 
 interface LevelModalProps {
   level: Level | null
@@ -32,7 +31,6 @@ export function LevelModal({
   onPrev,
   onNext,
   canGoNext,
-  onClickSfx,
   runSfx,
 }: LevelModalProps) {
   const closeBtnRef = useRef<HTMLButtonElement>(null)
@@ -53,11 +51,6 @@ export function LevelModal({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [level, onClose, onPrev, onNext, canGoNext, lightbox])
-
-  // Reset the lightbox if the modal is closed entirely.
-  useEffect(() => {
-    if (!level) setLightbox(null)
-  }, [level])
 
   if (!level) return null
 
@@ -135,7 +128,7 @@ export function LevelModal({
             </section>
           )}
 
-          {RUNS[level.id] && runSfx ? (
+          {RUNS[level.id] && runSfx && (
             <BossRun
               key={level.id}
               config={RUNS[level.id]}
@@ -144,14 +137,6 @@ export function LevelModal({
               onWin={onClear}
               onExit={onClose}
               sfx={runSfx}
-            />
-          ) : (
-            <QuizSection
-              level={level}
-              cleared={cleared}
-              onClear={onClear}
-              onCorrect={onClickSfx}
-              onWrong={onClickSfx}
             />
           )}
         </div>

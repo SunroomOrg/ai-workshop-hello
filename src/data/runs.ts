@@ -122,95 +122,149 @@ const VIETNAM_1985: RunConfig = {
 }
 
 /* ───────────────────────── WORLD 2: TEXAS ─────────────────────────── */
-/** ~25s clean run. 13 hazards. Metal-detector arches + ESL bubbles +
- *  a longhorn that periodically charges (projectile). */
+/**
+ * 1992–2005 Dallas-area suburb re-skin. ~25s clean run, 13 hazards.
+ *
+ * Story-anchor hazards:
+ *   - 2 walk-through metal detector arches (one in the mid run, one as
+ *     the boss-zone hero element — daily WTW HS checkpoint)
+ *   - 1 lawn sprinkler that telegraphs then sprays the chibi's lane
+ *
+ * Dallas-suburb street hazards:
+ *   - 2 yellow school buses
+ *   - 2 textbook stacks (Texas history + pre-AP English)
+ *   - 1 Lone Star flagpole (tall jump)
+ *   - 1 strip-mall pixel sign (low jump)
+ *   - 1 garage trash can with raccoon eyes peeking out
+ *   - 1 tipped kids' bicycle
+ *   - 1 knee-high mailbox w/ red flag up
+ *   - 1 passing pickup truck (low decoration / hazard)
+ *
+ * Boss zone: a full WTW HS metal-detector arch with stylized arrows
+ * pointing through — chibi walks through cleanly, no beep. Pays off
+ * the "Daily checkpoint: walk-through metal detector. Don't beep."
+ * pre-run flavor and the "B-, but the run is completed." post-win.
+ */
 const TEXAS_1992: RunConfig = {
   levelId: 'texas-1992',
   mode: 'autoRunner',
   length: AUTO.length,
   speed: AUTO.speed,
   biome: 'texas',
-  bossZone: { x: AUTO.length - 80, y: GROUND_Y - 64, w: 56, h: 64 },
-  bossArt: 'reportCard',
-  bossLabel: 'B-',
+  // Boss zone is the WTW HS metal-detector arch. Tall + narrow so the
+  // chibi visibly walks INTO it on win.
+  bossZone: { x: AUTO.length - 96, y: GROUND_Y - 64, w: 64, h: 64 },
+  bossArt: 'wtwBoss',
+  bossLabel: 'WTW HS',
   preRunFlavor: 'Daily checkpoint: walk-through metal detector. Don’t beep.',
-  bossPreview: 'Final boss: a giant report card stamped “B-”. Touch to clear.',
+  bossPreview:
+    'Final landmark: the Warren Travis White HS metal detector. Walk through clean.',
   postWinFlavor: 'B-, but the run is completed.',
   decorations: [
-    { x: 200,  y: GROUND_Y - 22, art: 'cactus', parallax: 0.8 },
-    { x: 950,  y: GROUND_Y - 22, art: 'cactus', parallax: 0.8 },
-    { x: 1700, y: GROUND_Y - 22, art: 'cactus', parallax: 0.8 },
-    { x: 2400, y: GROUND_Y - 22, art: 'cactus', parallax: 0.8 },
+    // Pickup truck silhouette passing in the far-mid stretch (decorative).
+    { x: 800,  y: GROUND_Y - 4,  art: 'pickupTruck', parallax: 0.85 },
+    { x: 2200, y: GROUND_Y - 4,  art: 'pickupTruck', parallax: 0.85 },
   ],
+  // Difficulty ramp: 360..1100 = intro static reads, 1180..2200 = mix
+  // (sprinkler timing + bus density), 2300..3300 = dense run-up to the
+  // boss zone arch.
   obstacles: [
-    // ── Intro
-    { x: 360,  y: onGround(18), w: 22, h: 18, art: 'eslBubble',        kind: 'jump' },
-    { x: 600,  y: GROUND_Y - 72, w: 40, h: 12, art: 'metalDetectorTop', kind: 'jump' },
-    { x: 880,  y: onGround(28), w: 36, h: 28, art: 'longhorn',         kind: 'jump' },
-    // ── Mix
-    { x: 1140, y: onGround(18), w: 22, h: 18, art: 'eslBubble',        kind: 'jump' },
-    { x: 1380, y: GROUND_Y - 72, w: 40, h: 12, art: 'metalDetectorTop', kind: 'jump' },
+    // ── Intro third (~5s) — easy reads, low jumps.
+    { x: 380,  y: onGround(14), w: 16, h: 14, art: 'mailbox',            kind: 'jump' },
+    { x: 620,  y: onGround(18), w: 18, h: 18, art: 'texasTextbookStack', kind: 'jump' },
+    { x: 880,  y: onGround(14), w: 22, h: 14, art: 'kidsBike',           kind: 'jump' },
+    // ── Middle third — taller props + introduce sprinkler timing + bus.
+    { x: 1140, y: onGround(28), w: 64, h: 28, art: 'schoolBus',          kind: 'jump' },
+    { x: 1380, y: onGround(20), w: 18, h: 20, art: 'garageTrashCan',     kind: 'jump' },
     {
-      x: 1620, y: onGround(28), w: 40, h: 28, art: 'longhornCharge',
-      kind: 'projectile', periodMs: 1400, activeMs: 800, phaseMs: 0,
+      // Sprinkler windup is 250ms (the head tick), active for 700ms.
+      // Generous off-window (~1.7s) so a 3-attempt clean run is realistic.
+      x: 1560, y: onGround(28), w: 18, h: 28, art: 'lawnSprinkler',
+      kind: 'projectile',
+      periodMs: 2400, windupMs: 250, activeMs: 700, phaseMs: 0,
     },
-    { x: 1860, y: onGround(18), w: 22, h: 18, art: 'eslBubble',        kind: 'jump' },
-    { x: 2080, y: GROUND_Y - 72, w: 40, h: 12, art: 'metalDetectorTop', kind: 'jump' },
-    // ── Dense
+    { x: 1780, y: GROUND_Y - 72, w: 28, h: 24, art: 'wtwArch',           kind: 'jump' },
+    { x: 1960, y: onGround(18), w: 18, h: 18, art: 'texasTextbookStack', kind: 'jump' },
+    { x: 2180, y: onGround(40), w: 24, h: 56, art: 'texasFlagPole',      kind: 'jump' },
+    // ── Final third — dense run-up + a second sprinkler + strip-mall sign.
+    { x: 2400, y: onGround(18), w: 22, h: 18, art: 'stripMallSign',      kind: 'jump' },
+    { x: 2620, y: onGround(28), w: 64, h: 28, art: 'schoolBus',          kind: 'jump' },
     {
-      x: 2320, y: onGround(28), w: 40, h: 28, art: 'longhornCharge',
-      kind: 'projectile', periodMs: 1300, activeMs: 800, phaseMs: 600,
+      x: 2860, y: onGround(28), w: 18, h: 28, art: 'lawnSprinkler',
+      kind: 'projectile',
+      periodMs: 2400, windupMs: 250, activeMs: 700, phaseMs: 1100,
     },
-    { x: 2540, y: onGround(28), w: 36, h: 28, art: 'longhorn',         kind: 'jump' },
-    { x: 2740, y: GROUND_Y - 72, w: 40, h: 12, art: 'metalDetectorTop', kind: 'jump' },
-    { x: 2940, y: onGround(18), w: 22, h: 18, art: 'eslBubble',        kind: 'jump' },
-    { x: 3120, y: onGround(28), w: 36, h: 28, art: 'longhorn',         kind: 'jump' },
+    { x: 3080, y: GROUND_Y - 72, w: 28, h: 24, art: 'wtwArch',           kind: 'jump' },
   ],
 }
 
 /* ─────────────────────── WORLD 3: AUSTIN UT ───────────────────────── */
-/** ~25s clean run. 13 hazards. Alarm clocks + library books + a "rolling
- *  alarm" (projectile that pops up briefly to time the jump). */
+/**
+ * 2005–2008 UT-Austin re-skin. ~25s clean run, 13 hazards.
+ *
+ * Story-anchor hazards:
+ *   - 2 textbook stacks (Film 101 / Anthro 320 — film-school grind)
+ *   - 1 banh-mi cart  (Szechuan-weekend-shifts / co-op-kitchen vibe)
+ *   - 2 alarm-clock timing projectiles (don't oversleep, don't miss the bus)
+ *   - 1 Cap-Metro bus-stop pole (tall jump — don't miss the bus)
+ *
+ * Campus-drag street hazards:
+ *   - 1 student bicycle
+ *   - 2 takeout coffee cups (low jump)
+ *   - 1 library push-cart
+ *   - 1 pizza-box stack (co-op-kitchen callback)
+ *   - 1 co-op composting bin (low jump)
+ *   - 1 film slate (film-school callback)
+ *
+ * Boss zone: the UT Tower with a graduation-cap clock face — silent
+ * payoff to "Stat: degree obtained."
+ */
 const AUSTIN_UT: RunConfig = {
   levelId: 'austin-ut-2005',
   mode: 'autoRunner',
   length: AUTO.length,
   speed: AUTO.speed,
   biome: 'austin-ut',
-  bossZone: { x: AUTO.length - 80, y: GROUND_Y - 90, w: 60, h: 90 },
-  bossArt: 'utTowerBell',
-  bossLabel: 'TOWER',
+  // Tower is tall and slender; collision is the (smaller) base box.
+  bossZone: { x: AUTO.length - 96, y: GROUND_Y - 80, w: 60, h: 80 },
+  bossArt: 'utTowerGradBoss',
+  bossLabel: 'UT',
   preRunFlavor:
     'Best years arc: don’t drop the books, don’t oversleep, don’t miss the bus.',
-  bossPreview: 'Final boss: the UT Tower bell. Touch to ring.',
+  bossPreview: 'Final boss: the UT Tower. Clock face reads 🎓.',
   postWinFlavor: 'Stat: degree obtained. Save updated.',
   decorations: [
-    { x: 250,  y: GROUND_Y - 10, art: 'sidewalkCrack', parallax: 1 },
-    { x: 1500, y: GROUND_Y - 10, art: 'sidewalkCrack', parallax: 1 },
+    // Ginkgo leaves scattered on the brick sidewalk (decorative).
+    { x: 240,  y: GROUND_Y - 4, art: 'ginkgoLeaf', parallax: 1 },
+    { x: 720,  y: GROUND_Y - 4, art: 'ginkgoLeaf', parallax: 1 },
+    { x: 1280, y: GROUND_Y - 4, art: 'ginkgoLeaf', parallax: 1 },
+    { x: 1840, y: GROUND_Y - 4, art: 'ginkgoLeaf', parallax: 1 },
+    { x: 2400, y: GROUND_Y - 4, art: 'ginkgoLeaf', parallax: 1 },
+    { x: 3000, y: GROUND_Y - 4, art: 'ginkgoLeaf', parallax: 1 },
   ],
   obstacles: [
-    // ── Intro
-    { x: 360,  y: onGround(14), w: 20, h: 14, art: 'alarmClock',  kind: 'jump' },
-    { x: 600,  y: onGround(18), w: 22, h: 18, art: 'libraryBook', kind: 'jump' },
-    { x: 840,  y: onGround(14), w: 20, h: 14, art: 'alarmClock',  kind: 'jump' },
-    // ── Mix
-    { x: 1080, y: onGround(18), w: 22, h: 18, art: 'libraryBook', kind: 'jump' },
+    // ── Intro third — easy reads + first textbook stack.
+    { x: 360,  y: onGround(18), w: 18, h: 18, art: 'utTextbook',  kind: 'jump' },
+    { x: 600,  y: onGround(18), w: 14, h: 18, art: 'coffeeCup',   kind: 'jump' },
+    { x: 840,  y: onGround(20), w: 22, h: 20, art: 'pizzaBox',    kind: 'jump' },
+    // ── Middle third — campus density + alarm timing + bus pole.
+    { x: 1080, y: onGround(14), w: 22, h: 14, art: 'studentBike', kind: 'jump' },
     {
       x: 1300, y: onGround(20), w: 22, h: 20, art: 'alarmClock',
-      kind: 'projectile', periodMs: 1200, activeMs: 700, phaseMs: 0,
+      kind: 'projectile', periodMs: 1300, activeMs: 700, phaseMs: 0,
     },
-    { x: 1540, y: onGround(14), w: 20, h: 14, art: 'alarmClock',  kind: 'jump' },
-    { x: 1760, y: onGround(18), w: 22, h: 18, art: 'libraryBook', kind: 'jump' },
+    { x: 1540, y: onGround(26), w: 28, h: 26, art: 'bookTrolley', kind: 'jump' },
+    { x: 1780, y: onGround(40), w: 14, h: 40, art: 'capMetroPole', kind: 'jump' },
+    { x: 1980, y: onGround(18), w: 18, h: 18, art: 'utTextbook',  kind: 'jump' },
+    // ── Final third — denser run-up + alarm rolls + banh-mi cart.
     {
-      x: 1980, y: onGround(20), w: 22, h: 20, art: 'alarmClock',
-      kind: 'projectile', periodMs: 1100, activeMs: 600, phaseMs: 400,
+      x: 2200, y: onGround(20), w: 22, h: 20, art: 'alarmClock',
+      kind: 'projectile', periodMs: 1200, activeMs: 600, phaseMs: 500,
     },
-    // ── Dense
-    { x: 2200, y: onGround(14), w: 20, h: 14, art: 'alarmClock',  kind: 'jump' },
-    { x: 2400, y: onGround(18), w: 22, h: 18, art: 'libraryBook', kind: 'jump' },
-    { x: 2600, y: onGround(14), w: 20, h: 14, art: 'alarmClock',  kind: 'jump' },
-    { x: 2800, y: onGround(18), w: 22, h: 18, art: 'libraryBook', kind: 'jump' },
-    { x: 3040, y: onGround(14), w: 20, h: 14, art: 'alarmClock',  kind: 'jump' },
+    { x: 2420, y: onGround(14), w: 14, h: 14, art: 'coffeeCup',   kind: 'jump' },
+    { x: 2620, y: onGround(28), w: 28, h: 28, art: 'banhMiCart',  kind: 'jump' },
+    { x: 2840, y: onGround(18), w: 18, h: 18, art: 'compostBin',  kind: 'jump' },
+    { x: 3060, y: onGround(16), w: 22, h: 16, art: 'filmSlate',   kind: 'jump' },
   ],
 }
 
@@ -382,82 +436,116 @@ const SEOUL_2010: RunConfig = {
 }
 
 /* ───────────────────────── WORLD 6: HOUSTON ───────────────────────── */
-/** ~25s clean run. 14 hazards. Rocket-exhaust (projectile, original) +
- *  humidity puffs + monitors. Dense, timing-heavy ending. */
+/**
+ * 2011–2014 Houston re-skin. ~25s clean run, 14 hazards.
+ *
+ * Story-anchor hazards:
+ *   - Vietnamese TV station era: 1 portable TV monitor, 1 VHS-tape
+ *     stack, 2 boom microphones, 1 director's clapboard
+ *   - Awty Intl School / personal-assistant era: 1 briefcase, 1 Awty
+ *     textbook
+ *
+ * NASA Houston street hazards:
+ *   - 2 humidity vapor patches (low jumps — kept from original mix)
+ *   - 1 humidity vapor cloud projectile (rises from ground, telegraphed)
+ *   - 1 NASA crawler-transporter slab (low wide jump)
+ *   - 2 falling exhaust trail projectiles (vertical streak from above)
+ *   - 1 passing yellow cab
+ *
+ * Boss zone: a small Mission-Control-style building doorway labeled
+ * "AWTY" with Fred + Henderson silhouettes inside — silent emotional
+ * payoff to the "most meaningful job to date" chapter line.
+ */
 const HOUSTON_2011: RunConfig = {
   levelId: 'houston-2011',
   mode: 'autoRunner',
   length: AUTO.length,
   speed: AUTO.speed,
   biome: 'houston',
-  bossZone: { x: AUTO.length - 80, y: GROUND_Y - 60, w: 60, h: 60 },
-  bossArt: 'launchButton',
-  bossLabel: 'LAUNCH',
+  // Boss zone is the AWTY mission-control doorway — wider than the
+  // generic 60×60 box so the building reads with presence on approach.
+  bossZone: { x: AUTO.length - 100, y: GROUND_Y - 80, w: 72, h: 80 },
+  bossArt: 'missionControlBoss',
+  bossLabel: 'AWTY',
   preRunFlavor:
     'Texas re-entry. Boss: humidity. The right mentor is somewhere on the next screen.',
-  bossPreview: 'Final boss: the LAUNCH button. Touch to lift off.',
+  bossPreview:
+    'Final landmark: a warm doorway labeled AWTY. Fred + Henderson waiting inside.',
   postWinFlavor: 'Posting accepted. Most meaningful job to date.',
   decorations: [
-    { x: 280,  y: GROUND_Y - 36, art: 'monitor', parallax: 0.9 },
-    { x: 1180, y: GROUND_Y - 36, art: 'monitor', parallax: 0.9 },
-    { x: 2080, y: GROUND_Y - 36, art: 'monitor', parallax: 0.9 },
+    // Yellow cab decoration in the mid-far stretch.
+    { x: 900,  y: GROUND_Y - 4,  art: 'yellowCab', parallax: 0.85 },
+    { x: 2400, y: GROUND_Y - 4,  art: 'yellowCab', parallax: 0.85 },
   ],
+  // Difficulty ramp keeps the original "dense, timing-heavy ending"
+  // shape but with re-themed projectiles — humidity vapor + a vertical
+  // exhaust streak telegraphing from above.
   obstacles: [
-    // ── Intro
-    { x: 360,  y: onGround(20), w: 26, h: 20, art: 'humidity', kind: 'jump' },
+    // ── Intro third — easy reads + first humidity patches + slab.
+    { x: 360,  y: onGround(20), w: 26, h: 20, art: 'humidity',     kind: 'jump' },
+    { x: 600,  y: onGround(16), w: 40, h: 16, art: 'nasaSlab',     kind: 'jump' },
+    { x: 820,  y: onGround(20), w: 26, h: 20, art: 'humidity',     kind: 'jump' },
+    // ── Middle third — TV-station + Awty props introduce variety.
+    { x: 1060, y: onGround(24), w: 24, h: 24, art: 'tvMonitor',    kind: 'jump' },
+    { x: 1280, y: onGround(20), w: 18, h: 20, art: 'vhsStack',     kind: 'jump' },
+    { x: 1480, y: onGround(28), w: 24, h: 28, art: 'boomMic',      kind: 'jump' },
     {
-      x: 600,  y: onGround(80), w: 30, h: 80, art: 'rocketExhaust',
-      kind: 'projectile', periodMs: 1500, activeMs: 700, phaseMs: 0,
+      // Falling exhaust telegraphs above the lane (250ms windup), then
+      // sweeps down for 360ms. Reasonable off-window for a clean run.
+      x: 1700, y: 60, w: 14, h: 90, art: 'fallingExhaust',
+      kind: 'projectile',
+      periodMs: 2200, windupMs: 250, activeMs: 360, phaseMs: 0,
     },
-    { x: 820,  y: onGround(20), w: 26, h: 20, art: 'humidity', kind: 'jump' },
-    // ── Mix
+    { x: 1900, y: onGround(16), w: 22, h: 16, art: 'dirClapboard', kind: 'jump' },
     {
-      x: 1060, y: onGround(80), w: 30, h: 80, art: 'rocketExhaust',
-      kind: 'projectile', periodMs: 1400, activeMs: 700, phaseMs: 600,
+      // Humidity vapor cloud rises from the ground — telegraphed (200ms
+      // moisture patch) then a wider cloud at jump height for 600ms.
+      x: 2080, y: onGround(28), w: 26, h: 28, art: 'humidityCloud',
+      kind: 'projectile',
+      periodMs: 2200, windupMs: 200, activeMs: 600, phaseMs: 1100,
     },
-    { x: 1300, y: onGround(20), w: 26, h: 20, art: 'humidity', kind: 'jump' },
+    // ── Final third — denser run-up + second exhaust + briefcase + bus.
+    { x: 2300, y: onGround(20), w: 22, h: 20, art: 'briefcase',    kind: 'jump' },
+    { x: 2500, y: onGround(28), w: 24, h: 28, art: 'boomMic',      kind: 'jump' },
     {
-      x: 1520, y: onGround(80), w: 30, h: 80, art: 'rocketExhaust',
-      kind: 'projectile', periodMs: 1450, activeMs: 700, phaseMs: 100,
+      x: 2700, y: 60, w: 14, h: 90, art: 'fallingExhaust',
+      kind: 'projectile',
+      periodMs: 2200, windupMs: 250, activeMs: 360, phaseMs: 1100,
     },
-    { x: 1760, y: onGround(20), w: 26, h: 20, art: 'humidity', kind: 'jump' },
-    {
-      x: 1980, y: onGround(80), w: 30, h: 80, art: 'rocketExhaust',
-      kind: 'projectile', periodMs: 1300, activeMs: 700, phaseMs: 700,
-    },
-    // ── Dense
-    { x: 2220, y: onGround(20), w: 26, h: 20, art: 'humidity', kind: 'jump' },
-    {
-      x: 2420, y: onGround(80), w: 30, h: 80, art: 'rocketExhaust',
-      kind: 'projectile', periodMs: 1200, activeMs: 700, phaseMs: 200,
-    },
-    { x: 2640, y: onGround(20), w: 26, h: 20, art: 'humidity', kind: 'jump' },
-    {
-      x: 2860, y: onGround(80), w: 30, h: 80, art: 'rocketExhaust',
-      kind: 'projectile', periodMs: 1250, activeMs: 700, phaseMs: 300,
-    },
-    { x: 3080, y: onGround(20), w: 26, h: 20, art: 'humidity', kind: 'jump' },
-    {
-      x: 3260, y: onGround(80), w: 30, h: 80, art: 'rocketExhaust',
-      kind: 'projectile', periodMs: 1300, activeMs: 700, phaseMs: 600,
-    },
+    { x: 2900, y: onGround(20), w: 22, h: 20, art: 'awtyTextbook', kind: 'jump' },
+    { x: 3140, y: onGround(20), w: 26, h: 20, art: 'humidity',     kind: 'jump' },
   ],
 }
 
 /* ─────────────── WORLD 7: AUSTIN HOME (PLATFORMER) ─────────────── */
 /**
- * Vertical climb. World 800 × 720. ~30–40s. 16 placed obstacles.
- * Avatar spawns bottom-left; reaches the cupola at top-right.
+ * 2014–present Austin-home vertical climb. World 800 × 720. ~30–40s.
+ * 16 placed obstacles + 14 platforms. Avatar spawns bottom-left and
+ * reaches the cupola at top-right.
+ *
+ * The platform layout is unchanged from the original W7 spec — only
+ * the *art skins* and the obstacle/decoration mix change in this polish
+ * pass. Re-arranging the platforms is its own level-design exercise.
  *
  * Layout (y values get smaller as you climb):
  *   y=680..720: ground (Austin streets) — implicit floor
- *   y=600     : hill platforms 1
- *   y=540..480: hill platforms 2
- *   y=440..380: rising mid platforms
+ *   y=600     : limestone-hill tier 1
+ *   y=540..480: limestone-hill tier 2
+ *   y=440..380: rising mid-air steps
  *   y=340..300: Capitol staircase
- *   y=240..220: Capitol portico (3 columns separated by gaps)
- *   y=160..120: dome ledge
- *   y=60..30  : cupola — bossZone
+ *   y=240..220: career-arc tech-sign portico (Openlistings → Util Profit)
+ *   y=160..120: pink-granite dome ledge
+ *   y=60..30  : cupola — bossZone (family-of-four payoff)
+ *
+ * Obstacle re-skin (no rearrangement):
+ *   - Ground critters → cactus pads (low jump)
+ *   - Tall parking-sign posts on mid platforms → "Now Hiring" tech-
+ *     recruiter signs (career callback)
+ *   - Stair / portico / dome perches → mix of baby blocks (IVF kid
+ *     callback), briefcases (career stack), Lady-Bird-Lake paddleboard
+ *
+ * Boss zone: chibi summits the cupola and is rendered with Granger +
+ * 2 kids beside her — silent family-of-four payoff.
  */
 const AUSTIN_HOME: RunConfig = {
   levelId: 'austin-home-2014',
@@ -468,64 +556,77 @@ const AUSTIN_HOME: RunConfig = {
   biome: 'austin-home',
   spawn: { x: 40, y: 680 },
   bossZone: { x: 600, y: 30, w: 60, h: 30 },
-  bossArt: 'flagPole',
-  bossLabel: 'PLANT FLAG',
+  bossArt: 'austinFamilyBoss',
+  bossLabel: 'HOME',
   preRunFlavor: 'Final castle. Climb to the dome.',
-  bossPreview: 'Final boss: the cupola. Touch the flagpole to plant the flag.',
+  bossPreview:
+    'Final landmark: the cupola. Granger and the kids waiting at the top.',
   postWinFlavor: 'Flag planted. Forever endgame engaged.',
   decorations: [
-    { x: 100, y: 660, art: 'parkingSign',   parallax: 1 },
-    { x: 480, y: 660, art: 'parkingSign',   parallax: 1 },
+    // Bluebonnet + paintbrush patches scattered along the climb.
+    { x: 80,  y: 680, art: 'bluebonnetPatch', parallax: 1 },
+    { x: 260, y: 680, art: 'bluebonnetPatch', parallax: 1 },
+    { x: 440, y: 680, art: 'bluebonnetPatch', parallax: 1 },
+    { x: 640, y: 680, art: 'bluebonnetPatch', parallax: 1 },
+    // 2019 Vietnam wedding callback — two floating rings above the
+    // first mid-air step. Coin-style decoration, no collision.
+    { x: 240, y: 460, art: 'weddingRing', parallax: 1 },
+    { x: 256, y: 452, art: 'weddingRing', parallax: 1 },
+    // Capitol columns reading as the portico backdrop.
     { x: 240, y: 220, art: 'capitolColumn', parallax: 1 },
     { x: 360, y: 220, art: 'capitolColumn', parallax: 1 },
     { x: 480, y: 220, art: 'capitolColumn', parallax: 1 },
     { x: 580, y: 220, art: 'capitolColumn', parallax: 1 },
   ],
   platforms: [
-    // Hill platforms (low climb)
-    { x: 120, y: 600, w: 100, h: 16, art: 'grass' },
-    { x: 320, y: 540, w: 90,  h: 16, art: 'grass' },
-    { x: 520, y: 600, w: 100, h: 16, art: 'grass' },
-    // Mid-air step toward staircase
-    { x: 220, y: 480, w: 80,  h: 14, art: 'grass' },
-    { x: 420, y: 440, w: 80,  h: 14, art: 'grass' },
-    // Capitol staircase
+    // Hill platforms (low climb) — re-skinned as limestone-hill tiles.
+    { x: 120, y: 600, w: 100, h: 16, art: 'limestoneHill' },
+    { x: 320, y: 540, w: 90,  h: 16, art: 'limestoneHill' },
+    { x: 520, y: 600, w: 100, h: 16, art: 'limestoneHill' },
+    // Mid-air step toward staircase.
+    { x: 220, y: 480, w: 80,  h: 14, art: 'limestoneHill' },
+    { x: 420, y: 440, w: 80,  h: 14, art: 'limestoneHill' },
+    // Capitol staircase (kept as cream stone).
     { x: 540, y: 380, w: 80,  h: 14, art: 'capitolStep' },
     { x: 380, y: 340, w: 80,  h: 14, art: 'capitolStep' },
     { x: 220, y: 300, w: 80,  h: 14, art: 'capitolStep' },
-    // Capitol portico — top of columns (with gaps to jump between)
-    { x: 220, y: 240, w: 60,  h: 14, art: 'capitolPlat' },
-    { x: 340, y: 240, w: 60,  h: 14, art: 'capitolPlat' },
-    { x: 460, y: 240, w: 60,  h: 14, art: 'capitolPlat' },
-    { x: 580, y: 240, w: 100, h: 14, art: 'capitolPlat' },
-    // Dome ledge
+    // Career-arc tech-sign portico — each platform tile reads a
+    // different colour deterministically from its x (Openlistings →
+    // Util Profit).
+    { x: 220, y: 240, w: 60,  h: 14, art: 'techSignPlat' },
+    { x: 340, y: 240, w: 60,  h: 14, art: 'techSignPlat' },
+    { x: 460, y: 240, w: 60,  h: 14, art: 'techSignPlat' },
+    { x: 580, y: 240, w: 100, h: 14, art: 'techSignPlat' },
+    // Pink-granite dome ledge.
     { x: 480, y: 160, w: 200, h: 16, art: 'dome' },
-    // Cupola
+    // Cupola — boss-zone summit.
     { x: 580, y: 60,  w: 100, h: 14, art: 'cupola' },
   ],
   obstacles: [
-    // Ground-level: armadillos + parking signs (must jump or detour)
-    { x: 200, y: 680 - 16, w: 22, h: 16, art: 'armadillo',       kind: 'jump' },
-    { x: 380, y: 680 - 16, w: 22, h: 16, art: 'armadillo',       kind: 'jump' },
-    { x: 560, y: 680 - 16, w: 22, h: 16, art: 'armadillo',       kind: 'jump' },
-    { x: 730, y: 680 - 16, w: 22, h: 16, art: 'armadillo',       kind: 'jump' },
-    // Tall parking-sign post on a mid-platform path (have to vault over)
-    { x: 360, y: 504, w: 8, h: 26, art: 'parkingSignTall',       kind: 'jump' },
-    { x: 280, y: 444, w: 8, h: 26, art: 'parkingSignTall',       kind: 'jump' },
-    // Pigeons on stair platforms
-    { x: 460, y: 376 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    { x: 300, y: 336 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    { x: 240, y: 296 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    // Pigeons on portico tops
-    { x: 240, y: 236 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    { x: 360, y: 236 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    { x: 480, y: 236 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    // Dome pigeons (pre-cupola)
-    { x: 540, y: 156 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    { x: 600, y: 156 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    { x: 660, y: 156 - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
-    // Cupola pigeon (one last hop guard)
-    { x: 600, y: 56  - 12, w: 14, h: 12, art: 'pigeon',          kind: 'jump' },
+    // Ground-level: cactus pads instead of armadillos.
+    { x: 200, y: 680 - 14, w: 22, h: 14, art: 'cactusPad',     kind: 'jump' },
+    { x: 380, y: 680 - 14, w: 22, h: 14, art: 'cactusPad',     kind: 'jump' },
+    { x: 560, y: 680 - 14, w: 22, h: 14, art: 'cactusPad',     kind: 'jump' },
+    // Lady Bird Lake SUP near the foot of the hill (low obstacle).
+    { x: 730, y: 680 - 6,  w: 28, h: 6,  art: 'paddleboard',   kind: 'jump' },
+    // Tall "Now Hiring" recruiter signs on mid platforms (tech-job era).
+    { x: 360, y: 504, w: 8, h: 26, art: 'nowHiringSign',       kind: 'jump' },
+    { x: 280, y: 444, w: 8, h: 26, art: 'nowHiringSign',       kind: 'jump' },
+    // Briefcases on stair platforms — career callback.
+    { x: 460, y: 376 - 14, w: 14, h: 14, art: 'briefcase',     kind: 'jump' },
+    { x: 300, y: 336 - 14, w: 14, h: 14, art: 'briefcase',     kind: 'jump' },
+    { x: 240, y: 296 - 14, w: 14, h: 14, art: 'briefcase',     kind: 'jump' },
+    // Baby blocks on the career-portico tops (IVF / surprise-baby
+    // callback). Three colors cycle by x position.
+    { x: 240, y: 236 - 14, w: 14, h: 14, art: 'babyBlock',     kind: 'jump' },
+    { x: 360, y: 236 - 14, w: 14, h: 14, art: 'babyBlock',     kind: 'jump' },
+    { x: 480, y: 236 - 14, w: 14, h: 14, art: 'babyBlock',     kind: 'jump' },
+    // Dome ledge briefcases (pre-cupola).
+    { x: 540, y: 156 - 14, w: 14, h: 14, art: 'briefcase',     kind: 'jump' },
+    { x: 600, y: 156 - 14, w: 14, h: 14, art: 'briefcase',     kind: 'jump' },
+    { x: 660, y: 156 - 14, w: 14, h: 14, art: 'briefcase',     kind: 'jump' },
+    // Cupola baby-block — one last hop guard before the family payoff.
+    { x: 600, y: 56  - 14, w: 14, h: 14, art: 'babyBlock',     kind: 'jump' },
   ],
 }
 

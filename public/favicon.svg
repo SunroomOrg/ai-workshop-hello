@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <rect width="16" height="16" fill="#6cb9ff"/>
+  <circle cx="8" cy="9" r="5" fill="#e8c34a" stroke="#7a5326" stroke-width="1"/>
+  <text x="8" y="11" text-anchor="middle" font-family="monospace" font-size="6" font-weight="bold" fill="#3a2410">X</text>
+</svg>

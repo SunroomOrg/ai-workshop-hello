@@ -1,0 +1,1524 @@
+/**
+ * 16-bit world map of Lan's life, with one region per place she has lived.
+ * All original art (no copyrighted game assets), styled to evoke the 90s
+ * SNES overworld feel. ViewBox is 140 × 60 to fit seven regions left → right.
+ *
+ * Reading order, left to right:
+ *   1. Vietnam (tropical island, palms, pagoda)
+ *   2. Texas childhood (ranch, longhorn, big sky)
+ *   3. Austin UT (campus + UT Tower in burnt orange)
+ *   4. Los Angeles (palms, hills, sunset, Hollywood-ish sign)
+ *   5. Seoul (mountains + hanok pagoda + a tall tower)
+ *   6. Houston (urban skyline + a small space rocket)
+ *   7. Austin home (Texas Capitol, current era — the "castle" of the map)
+ */
+export function MapBackground() {
+  return (
+    <svg
+      viewBox="0 0 140 60"
+      preserveAspectRatio="xMidYMid slice"
+      className="map-bg"
+      aria-hidden="true"
+      shapeRendering="crispEdges"
+    >
+      <defs>
+        <pattern id="water" width="4" height="2" patternUnits="userSpaceOnUse">
+          <rect width="4" height="2" fill="#3a86c8" />
+          <rect x="0" y="0" width="2" height="1" fill="#5aa6e0" />
+          <rect x="2" y="1" width="2" height="1" fill="#5aa6e0" />
+        </pattern>
+
+        <pattern id="grass" width="2" height="2" patternUnits="userSpaceOnUse">
+          <rect width="2" height="2" fill="#4fae3a" />
+          <rect x="0" y="0" width="1" height="1" fill="#62c44b" />
+          <rect x="1" y="1" width="1" height="1" fill="#3a8e2a" />
+        </pattern>
+
+        <pattern id="paddy" width="3" height="3" patternUnits="userSpaceOnUse">
+          <rect width="3" height="3" fill="#6fb34a" />
+          <rect x="0" y="0" width="1" height="1" fill="#a3d97a" />
+          <rect x="1" y="1" width="1" height="1" fill="#54983a" />
+          <rect x="2" y="2" width="1" height="1" fill="#a3d97a" />
+        </pattern>
+
+        <pattern id="dryGrass" width="2" height="2" patternUnits="userSpaceOnUse">
+          <rect width="2" height="2" fill="#cfa654" />
+          <rect x="0" y="0" width="1" height="1" fill="#e3c275" />
+          <rect x="1" y="1" width="1" height="1" fill="#a78239" />
+        </pattern>
+
+        <pattern id="utLawn" width="2" height="2" patternUnits="userSpaceOnUse">
+          <rect width="2" height="2" fill="#3f8a2a" />
+          <rect x="0" y="0" width="1" height="1" fill="#56a93a" />
+          <rect x="1" y="1" width="1" height="1" fill="#2c6a1d" />
+        </pattern>
+
+        <pattern id="sand" width="2" height="2" patternUnits="userSpaceOnUse">
+          <rect width="2" height="2" fill="#e6cf8b" />
+          <rect x="0" y="0" width="1" height="1" fill="#f4dfa0" />
+          <rect x="1" y="1" width="1" height="1" fill="#c9b070" />
+        </pattern>
+
+        <pattern id="rock" width="3" height="3" patternUnits="userSpaceOnUse">
+          <rect width="3" height="3" fill="#8a6a4a" />
+          <rect x="0" y="0" width="1" height="1" fill="#a98060" />
+          <rect x="2" y="2" width="1" height="1" fill="#6a4f36" />
+        </pattern>
+
+        <pattern id="cityFloor" width="2" height="2" patternUnits="userSpaceOnUse">
+          <rect width="2" height="2" fill="#4a4a55" />
+          <rect x="0" y="0" width="1" height="1" fill="#5e5e6a" />
+          <rect x="1" y="1" width="1" height="1" fill="#373740" />
+        </pattern>
+
+        <linearGradient id="sunset" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#ffb96e" />
+          <stop offset="60%" stopColor="#f29ac0" />
+          <stop offset="100%" stopColor="#7e7ed6" />
+        </linearGradient>
+      </defs>
+
+      <rect width="140" height="60" fill="url(#water)" />
+
+      {/* Sakura/peach pastel sky — chunky horizontal bands sit ABOVE the water
+          rect and BELOW the regions, so mountains and the Capitol naturally
+          paint through. Stepped, never gradient: 16-bit budget. */}
+      <SkyBands />
+      <SakuraField />
+
+      <Vietnam />
+      <Texas />
+      <AustinUT />
+      <LosAngeles />
+      <Seoul />
+      <Houston />
+      <AustinHome />
+
+      <Bridge x1={20} x2={24} y={48} />
+      <Bridge x1={42} x2={44} y={50} />
+      <Bridge x1={60} x2={62} y={42} />
+      <Bridge x1={78} x2={80} y={32} />
+      <Bridge x1={96} x2={100} y={42} />
+      <Bridge x1={116} x2={120} y={42} />
+
+      <DottedPath />
+
+      <CloudPass />
+      <SparkleField />
+      <HeartTwinkles />
+    </svg>
+  )
+}
+
+/* ──────────────────────  Cute sky atmosphere  ────────────────────────────
+ * Soft pastel band stack across the upper third. Each band is a flat fill
+ * (no gradients — Game Boy 4-color discipline, just extended to ~5 stops).
+ * Palette goes sakura-pink at the very top → peach → cream as it meets the
+ * horizon, so when you look at the map it feels like a dawn save-file. */
+function SkyBands() {
+  return (
+    <g aria-hidden="true">
+      <rect x="0" y="0" width="140" height="3" fill="#ffd0e0" />
+      <rect x="0" y="3" width="140" height="3" fill="#ffdcea" />
+      <rect x="0" y="6" width="140" height="3" fill="#ffe4d2" />
+      <rect x="0" y="9" width="140" height="2.5" fill="#ffeacc" />
+      <rect x="0" y="11.5" width="140" height="1.5" fill="#fff0d8" />
+    </g>
+  )
+}
+
+/* Cherry-blossom flecks scattered through the pastel sky. Each fleck is a
+ * 5-pixel plus-shape (4 petals + 1 cream center). Asymmetric placement so
+ * it reads as scenery, not a wallpaper repeat. */
+function SakuraField() {
+  const flecks: Array<{ cx: number; cy: number; deeper?: boolean }> = [
+    { cx: 4, cy: 4 },
+    { cx: 18, cy: 9.5, deeper: true },
+    { cx: 28, cy: 4 },
+    { cx: 34, cy: 11 },
+    { cx: 50, cy: 3 },
+    { cx: 58, cy: 11.5, deeper: true },
+    { cx: 68, cy: 5 },
+    { cx: 76, cy: 11 },
+    { cx: 90, cy: 3.5 },
+    { cx: 102, cy: 6, deeper: true },
+    { cx: 112, cy: 11 },
+  ]
+  return (
+    <g aria-hidden="true">
+      {flecks.map((f, i) => (
+        <Sakura key={i} cx={f.cx} cy={f.cy} deeper={f.deeper} />
+      ))}
+    </g>
+  )
+}
+
+function Sakura({
+  cx,
+  cy,
+  deeper,
+}: {
+  cx: number
+  cy: number
+  deeper?: boolean
+}) {
+  const petal = deeper ? '#ff9ebe' : '#ffb7c8'
+  const center = '#fff5e1'
+  const s = 0.4 // pixel size in viewBox units
+  return (
+    <g>
+      <rect x={cx - s * 1.5} y={cy - s / 2} width={s} height={s} fill={petal} />
+      <rect x={cx + s / 2} y={cy - s / 2} width={s} height={s} fill={petal} />
+      <rect x={cx - s / 2} y={cy - s * 1.5} width={s} height={s} fill={petal} />
+      <rect x={cx - s / 2} y={cy + s / 2} width={s} height={s} fill={petal} />
+      <rect x={cx - s / 2} y={cy - s / 2} width={s} height={s} fill={center} />
+    </g>
+  )
+}
+
+/* Chibi pink-tinted clouds in the upper third. Replaces the original four
+ * pure-white rects so they sit on the new pastel sky without flatly
+ * overpowering it. Pink underside shadow adds depth without breaking the
+ * pixel-art rule (no soft drop shadow — just a flat band). */
+function CloudPass() {
+  return (
+    <g aria-hidden="true">
+      <ChibiCloud x={4} y={5} w={7} h={2.4} />
+      <ChibiCloud x={36} y={2} w={9} h={2.4} bigBumpRight />
+      <ChibiCloud x={78} y={3.4} w={7} h={2.4} />
+      <ChibiCloud x={114} y={5.4} w={8} h={2.4} bigBumpRight />
+      <ChibiCloud x={62} y={9.6} w={5} h={1.8} small />
+    </g>
+  )
+}
+
+function ChibiCloud({
+  x,
+  y,
+  w,
+  h,
+  small,
+  bigBumpRight,
+}: {
+  x: number
+  y: number
+  w: number
+  h: number
+  small?: boolean
+  bigBumpRight?: boolean
+}) {
+  const body = '#fff0f3'
+  const under = '#ffd0dc'
+  const rim = '#ffe2ea'
+  return (
+    <g opacity={small ? 0.85 : 0.95}>
+      {/* underside shadow band — flat, no blur */}
+      <rect x={x} y={y + h - 0.5} width={w} height={0.5} fill={under} />
+      {/* main body */}
+      <rect x={x} y={y} width={w} height={h - 0.5} fill={body} />
+      {/* top rim highlight: a 0.4-tall pale strip */}
+      <rect x={x + 0.4} y={y} width={w - 0.8} height={0.4} fill={rim} />
+      {/* chunky bumps on the top edge */}
+      <rect x={x + 1} y={y - 0.6} width={1.2} height={0.6} fill={body} />
+      <rect
+        x={x + (bigBumpRight ? w - 2.6 : w - 2)}
+        y={y - 0.8}
+        width={bigBumpRight ? 1.8 : 1.2}
+        height={0.8}
+        fill={body}
+      />
+      {!small && (
+        <rect
+          x={x + w / 2 - 0.4}
+          y={y - 0.4}
+          width={1}
+          height={0.4}
+          fill={body}
+        />
+      )}
+    </g>
+  )
+}
+
+/* Twinkles: 4-pointed pixel stars (1 center + 4 directional pixels). Soft
+ * cream/white. Animated via CSS class .map-sparkle — slow stagger blink,
+ * disabled under prefers-reduced-motion. */
+function SparkleField() {
+  const sparkles: Array<{ cx: number; cy: number; size?: number; phase?: number }> = [
+    { cx: 12, cy: 14, size: 0.35, phase: 0 },
+    { cx: 44, cy: 12.5, size: 0.4, phase: 0.7 },
+    { cx: 72, cy: 14, size: 0.35, phase: 1.4 },
+    { cx: 96, cy: 13, size: 0.4, phase: 2.1 },
+    // Two over the UT Tower (above its observation deck).
+    { cx: 53, cy: 26, size: 0.35, phase: 0.4 },
+    { cx: 56.5, cy: 23, size: 0.35, phase: 1.6 },
+    // One over the Saturn V nose cone.
+    { cx: 109.5, cy: 21, size: 0.4, phase: 0.9 },
+    // Two over the Capitol dome / statue.
+    { cx: 132, cy: 8, size: 0.4, phase: 1.1 },
+    { cx: 127, cy: 13, size: 0.35, phase: 2.4 },
+  ]
+  return (
+    <g aria-hidden="true">
+      {sparkles.map((s, i) => (
+        <Sparkle
+          key={i}
+          cx={s.cx}
+          cy={s.cy}
+          size={s.size ?? 0.4}
+          phase={s.phase ?? 0}
+        />
+      ))}
+    </g>
+  )
+}
+
+function Sparkle({
+  cx,
+  cy,
+  size,
+  phase,
+}: {
+  cx: number
+  cy: number
+  size: number
+  phase: number
+}) {
+  const center = '#ffffff'
+  const arm = '#fff5e1'
+  return (
+    <g
+      className="map-sparkle"
+      style={{ animationDelay: `${phase}s` }}
+    >
+      <rect x={cx - size / 2} y={cy - size / 2} width={size} height={size} fill={center} />
+      <rect x={cx - size / 2} y={cy - size * 1.6} width={size} height={size} fill={arm} />
+      <rect x={cx - size / 2} y={cy + size * 0.6} width={size} height={size} fill={arm} />
+      <rect x={cx - size * 1.6} y={cy - size / 2} width={size} height={size} fill={arm} />
+      <rect x={cx + size * 0.6} y={cy - size / 2} width={size} height={size} fill={arm} />
+    </g>
+  )
+}
+
+/* Two restrained pink hearts — a found motif, not a stamp. One tucked in
+ * the top-right pastel sky, one near a bottom corner of the map. */
+function HeartTwinkles() {
+  return (
+    <g aria-hidden="true">
+      <Heart cx={107.5} cy={3.6} />
+      <Heart cx={3.6} cy={56.4} />
+    </g>
+  )
+}
+
+function Heart({ cx, cy }: { cx: number; cy: number }) {
+  const body = '#ff9ebe'
+  const deep = '#e36a8c'
+  const shine = '#ffd0dc'
+  const p = 0.32 // pixel size
+  return (
+    <g>
+      {/* Two top lobes */}
+      <rect x={cx - p * 2.5} y={cy - p * 1.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 1.5} y={cy - p * 2.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 0.5} y={cy - p * 1.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 0.5} y={cy - p * 2.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 1.5} y={cy - p * 1.5} width={p} height={p} fill={body} />
+      {/* Middle row */}
+      <rect x={cx - p * 2.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 1.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 0.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 0.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 1.5} y={cy - p * 0.5} width={p} height={p} fill={body} />
+      {/* Lower taper */}
+      <rect x={cx - p * 1.5} y={cy + p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx - p * 0.5} y={cy + p * 0.5} width={p} height={p} fill={body} />
+      <rect x={cx + p * 0.5} y={cy + p * 0.5} width={p} height={p} fill={body} />
+      {/* Point */}
+      <rect x={cx - p * 0.5} y={cy + p * 1.5} width={p} height={p} fill={body} />
+      {/* Highlight pixel */}
+      <rect x={cx - p * 1.5} y={cy - p * 1.5} width={p} height={p} fill={shine} />
+      {/* Deep shadow pixel for definition */}
+      <rect x={cx + p * 1.5} y={cy + p * 0.5} width={p} height={p} fill={deep} />
+    </g>
+  )
+}
+
+/* ─────────────────────────  Region 1: Vietnam  ───────────────────────── */
+function Vietnam() {
+  return (
+    <g>
+      <rect x="0" y="58" width="22" height="2" fill="#6a4f36" />
+      <rect x="0" y="56" width="22" height="2" fill="url(#rock)" />
+      <rect x="0" y="50" width="22" height="6" fill="url(#paddy)" />
+      <polygon points="0,50 22,50 22,46 16,46 12,48 4,46 0,46" fill="url(#paddy)" />
+
+      <PalmTree cx={4} baseY={50} h={5} />
+      <PalmTree cx={18} baseY={50} h={4} />
+
+      <Pagoda baseX={11} baseY={50} />
+
+      <rect x="2" y="52" width="3" height="0.4" fill="#3a8e2a" opacity="0.6" />
+      <rect x="14" y="53" width="4" height="0.4" fill="#3a8e2a" opacity="0.6" />
+    </g>
+  )
+}
+
+function PalmTree({ cx, baseY, h }: { cx: number; baseY: number; h: number }) {
+  return (
+    <g>
+      <rect x={cx - 0.3} y={baseY - h} width={0.6} height={h} fill="#7a4f2a" />
+      <rect x={cx - 0.3} y={baseY - h + 1} width={0.6} height={0.3} fill="#5a3a1c" />
+      <rect x={cx - 0.3} y={baseY - h + 2} width={0.6} height={0.3} fill="#5a3a1c" />
+      <rect x={cx - 2.2} y={baseY - h - 0.6} width={2} height={0.6} fill="#1f5a1d" />
+      <rect x={cx + 0.4} y={baseY - h - 0.6} width={2} height={0.6} fill="#1f5a1d" />
+      <rect x={cx - 1.8} y={baseY - h - 1.2} width={1.4} height={0.6} fill="#3a8e2a" />
+      <rect x={cx + 0.6} y={baseY - h - 1.2} width={1.4} height={0.6} fill="#3a8e2a" />
+      <rect x={cx - 0.4} y={baseY - h - 1.6} width={0.8} height={0.6} fill="#3a8e2a" />
+    </g>
+  )
+}
+
+function Pagoda({ baseX, baseY }: { baseX: number; baseY: number }) {
+  return (
+    <g>
+      <rect x={baseX} y={baseY - 4} width={4} height={4} fill="#c44b3a" />
+      <polygon
+        points={`${baseX - 0.6},${baseY - 4} ${baseX + 4.6},${baseY - 4} ${baseX + 4.2},${baseY - 4.6} ${baseX - 0.2},${baseY - 4.6}`}
+        fill="#7a2a1f"
+      />
+      <rect x={baseX + 0.6} y={baseY - 6.2} width={2.8} height={1.8} fill="#c44b3a" />
+      <polygon
+        points={`${baseX + 0.2},${baseY - 6.2} ${baseX + 3.8},${baseY - 6.2} ${baseX + 3.5},${baseY - 6.8} ${baseX + 0.5},${baseY - 6.8}`}
+        fill="#7a2a1f"
+      />
+      <rect x={baseX + 1.8} y={baseY - 7.6} width={0.4} height={1} fill="#f4c800" />
+      <rect x={baseX + 1.6} y={baseY - 2.4} width={0.8} height={2.4} fill="#3a2410" />
+    </g>
+  )
+}
+
+/* ──────────────────────  Region 2: Texas childhood  ──────────────────── */
+function Texas() {
+  return (
+    <g>
+      <rect x="22" y="58" width="22" height="2" fill="#7a5326" />
+      <rect x="22" y="38" width="22" height="20" fill="url(#dryGrass)" />
+      <rect x="22" y="36" width="22" height="2" fill="#a78239" />
+
+      <BarnFence x1={24} x2={42} y={42} />
+
+      <Longhorn x={32} y={44} />
+      <Cactus cx={26} baseY={42} />
+      <Cactus cx={40} baseY={42} />
+      <Tumbleweed cx={36} y={45} />
+
+      <rect x="22" y="40" width="22" height="0.4" fill="#a78239" opacity="0.4" />
+    </g>
+  )
+}
+
+function BarnFence({ x1, x2, y }: { x1: number; x2: number; y: number }) {
+  const posts = Math.floor((x2 - x1) / 2.2)
+  return (
+    <g>
+      <rect x={x1} y={y - 0.4} width={x2 - x1} height={0.4} fill="#7a5326" />
+      <rect x={x1} y={y - 1.6} width={x2 - x1} height={0.4} fill="#7a5326" />
+      {Array.from({ length: posts + 1 }).map((_, i) => (
+        <rect
+          key={i}
+          x={x1 + i * ((x2 - x1) / posts)}
+          y={y - 2.4}
+          width={0.4}
+          height={2.4}
+          fill="#5a3a1c"
+        />
+      ))}
+    </g>
+  )
+}
+
+function Longhorn({ x, y }: { x: number; y: number }) {
+  return (
+    <g>
+      <rect x={x} y={y} width={3.4} height={2} fill="#a04020" />
+      <rect x={x + 0.2} y={y - 0.4} width={3} height={0.6} fill="#7a2a10" />
+      <rect x={x + 2.6} y={y - 1.4} width={1.2} height={1} fill="#a04020" />
+      <rect x={x + 2.4} y={y - 1.6} width={2} height={0.4} fill="#fff7c2" />
+      <rect x={x + 2.4} y={y - 1.2} width={0.4} height={0.4} fill="#3a2410" />
+      <rect x={x + 0.2} y={y + 2} width={0.4} height={0.6} fill="#3a2410" />
+      <rect x={x + 1} y={y + 2} width={0.4} height={0.6} fill="#3a2410" />
+      <rect x={x + 2} y={y + 2} width={0.4} height={0.6} fill="#3a2410" />
+      <rect x={x + 2.8} y={y + 2} width={0.4} height={0.6} fill="#3a2410" />
+    </g>
+  )
+}
+
+function Cactus({ cx, baseY }: { cx: number; baseY: number }) {
+  return (
+    <g>
+      <rect x={cx - 0.5} y={baseY - 4} width={1} height={4} fill="#3a8e2a" />
+      <rect x={cx - 1.4} y={baseY - 3} width={0.6} height={1.4} fill="#3a8e2a" />
+      <rect x={cx + 0.8} y={baseY - 2.6} width={0.6} height={1.4} fill="#3a8e2a" />
+      <rect x={cx - 0.3} y={baseY - 3.6} width={0.2} height={0.2} fill="#fff7c2" />
+    </g>
+  )
+}
+
+function Tumbleweed({ cx, y }: { cx: number; y: number }) {
+  return (
+    <g>
+      <circle cx={cx} cy={y} r={0.7} fill="#a78239" />
+      <circle cx={cx + 0.3} cy={y - 0.2} r={0.3} fill="#7a5326" />
+    </g>
+  )
+}
+
+/* ─────────────────────  Region 3: Austin UT campus  ───────────────────── */
+function AustinUT() {
+  return (
+    <g>
+      <rect x="44" y="58" width="18" height="2" fill="#6a4f36" />
+      <rect x="44" y="56" width="18" height="2" fill="url(#rock)" />
+      <rect x="44" y="48" width="18" height="8" fill="url(#utLawn)" />
+
+      <UTTower baseX={50} baseY={48} />
+
+      <rect x="46" y="48" width="0.6" height="0.6" fill="#cfa654" />
+      <rect x="59" y="49" width="0.6" height="0.6" fill="#cfa654" />
+    </g>
+  )
+}
+
+function UTTower({ baseX, baseY }: { baseX: number; baseY: number }) {
+  // baseY = top of platform. Tower sits on top of a wide academic base.
+  const orange = '#bf5700'
+  const orangeDk = '#7a3500'
+  const white = '#fdf6dd'
+
+  return (
+    <g>
+      <rect x={baseX - 2} y={baseY - 5} width={12} height={5} fill={white} />
+      <rect x={baseX - 2} y={baseY - 5} width={12} height={0.6} fill="#c9b07a" />
+      <rect x={baseX - 1.4} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX + 1.4} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX + 2.8} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX + 4.2} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX + 5.6} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX + 7} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX + 8.4} y={baseY - 4.6} width={0.4} height={4} fill="#c9b07a" />
+      <rect x={baseX + 3.4} y={baseY - 3.4} width={1.4} height={3.4} fill={orange} />
+
+      <rect x={baseX + 2.4} y={baseY - 17} width={3.4} height={12} fill={orange} />
+      <rect x={baseX + 2.4} y={baseY - 17} width={3.4} height={0.6} fill={orangeDk} />
+      <rect x={baseX + 2.4} y={baseY - 5.2} width={3.4} height={0.4} fill={orangeDk} />
+      {[15, 13, 11, 9, 7].map(y => (
+        <g key={y}>
+          <rect
+            x={baseX + 2.7}
+            y={baseY - y}
+            width={0.4}
+            height={0.8}
+            fill={white}
+          />
+          <rect
+            x={baseX + 3.5}
+            y={baseY - y}
+            width={0.4}
+            height={0.8}
+            fill={white}
+          />
+          <rect
+            x={baseX + 4.3}
+            y={baseY - y}
+            width={0.4}
+            height={0.8}
+            fill={white}
+          />
+          <rect
+            x={baseX + 5.1}
+            y={baseY - y}
+            width={0.4}
+            height={0.8}
+            fill={white}
+          />
+        </g>
+      ))}
+
+      <rect x={baseX + 2.2} y={baseY - 19} width={3.8} height={2} fill={white} />
+      <rect x={baseX + 2.2} y={baseY - 19} width={3.8} height={0.4} fill="#c9b07a" />
+      <circle
+        cx={baseX + 4.1}
+        cy={baseY - 18}
+        r={0.7}
+        fill={white}
+        stroke="#3a2410"
+        strokeWidth={0.2}
+      />
+      <rect x={baseX + 4.05} y={baseY - 18.4} width={0.1} height={0.5} fill="#3a2410" />
+      <rect x={baseX + 4.1} y={baseY - 18} width={0.4} height={0.1} fill="#3a2410" />
+
+      <rect x={baseX + 2.6} y={baseY - 19.6} width={0.3} height={0.6} fill={orangeDk} />
+      <rect x={baseX + 3.4} y={baseY - 19.6} width={0.3} height={0.6} fill={orangeDk} />
+      <rect x={baseX + 4.5} y={baseY - 19.6} width={0.3} height={0.6} fill={orangeDk} />
+      <rect x={baseX + 5.3} y={baseY - 19.6} width={0.3} height={0.6} fill={orangeDk} />
+
+      <rect x={baseX + 4} y={baseY - 21.2} width={0.2} height={1.6} fill="#3a2410" />
+      <polygon
+        points={`${baseX + 4.2},${baseY - 21.2} ${baseX + 5.4},${baseY - 20.6} ${baseX + 4.2},${baseY - 20}`}
+        fill={orange}
+      />
+    </g>
+  )
+}
+
+/* ─────────────────────  Region 4: Los Angeles  ───────────────────────── */
+function LosAngeles() {
+  return (
+    <g>
+      <rect x="62" y="58" width="16" height="2" fill="#c9b070" />
+      <rect x="62" y="44" width="16" height="14" fill="url(#sand)" />
+
+      <polygon
+        points="62,44 78,44 78,36 76,33 73,30 70,29 67,31 64,33 62,36"
+        fill="#3f7a3a"
+      />
+      <polygon
+        points="62,44 78,44 78,40 76,37 73,34 70,33 67,35 64,37 62,40"
+        fill="#56a93a"
+      />
+
+      <rect x="63.4" y="34" width="0.4" height="2.4" fill="#3a2410" opacity="0.5" />
+      <rect x="65.6" y="33.4" width="0.4" height="2.4" fill="#3a2410" opacity="0.5" />
+      <rect x="67.8" y="32.6" width="0.4" height="2.4" fill="#3a2410" opacity="0.5" />
+      <rect x="70" y="32.4" width="0.4" height="2.4" fill="#3a2410" opacity="0.5" />
+      <rect x="72.2" y="32.6" width="0.4" height="2.4" fill="#3a2410" opacity="0.5" />
+      <rect x="74.4" y="33.4" width="0.4" height="2.4" fill="#3a2410" opacity="0.5" />
+      <rect x="76.4" y="34" width="0.4" height="2.4" fill="#3a2410" opacity="0.5" />
+
+      <HollywoodSign baseX={62.5} baseY={40} />
+
+      <PalmTree cx={64} baseY={48} h={6} />
+      <PalmTree cx={76} baseY={48} h={5} />
+
+      <rect x="63" y="55" width="2" height="0.4" fill="#8a6a4a" opacity="0.6" />
+      <rect x="74" y="56" width="2" height="0.4" fill="#8a6a4a" opacity="0.6" />
+    </g>
+  )
+}
+
+/**
+ * Iconic LA Hollywood-style sign: tall white-block letters spelling
+ * "HOLLYWOOD" planted across a green hilltop. Letters are drawn as filled
+ * rectangles with shadow so they read clearly even at tiny sizes.
+ */
+function HollywoodSign({ baseX, baseY }: { baseX: number; baseY: number }) {
+  const letters = 'HOLLYWOOD'.split('')
+  const letterW = 1.5
+  const letterH = 3.6
+  const gap = 0.16
+  return (
+    <g>
+      {letters.map((ch, i) => {
+        const lx = baseX + i * (letterW + gap)
+        return (
+          <g key={i}>
+            <rect
+              x={lx + 0.15}
+              y={baseY - letterH + 0.2}
+              width={letterW}
+              height={letterH}
+              fill="#3a2410"
+              opacity="0.45"
+            />
+            <rect
+              x={lx}
+              y={baseY - letterH}
+              width={letterW}
+              height={letterH}
+              fill="#ffffff"
+              stroke="#3a2410"
+              strokeWidth={0.18}
+            />
+            <text
+              x={lx + letterW / 2}
+              y={baseY - letterH / 2 + 0.05}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize={2.6}
+              fontWeight="bold"
+              fontFamily='"Press Start 2P", monospace'
+              fill="#3a2410"
+            >
+              {ch}
+            </text>
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+/* ─────────────────────────  Region 5: Seoul  ──────────────────────────── *
+ * Composition:
+ *   • Distant Namsan-feeling hill silhouette behind the skyline.
+ *   • A cluster of 6 dusk-navy high-rises with lit-window grids
+ *     (butter-yellow + cool-teal mix), some windows softly pulsing.
+ *   • One slim, tapering Lotte-World-style super-tall on the right edge.
+ *   • Foreground anchor: Gwanghwamun palace gate — three arched
+ *     stone gateways, red columns, dancheong-painted band, multi-tier
+ *     pavilion roof with up-turned eaves in ceramic teal.
+ *   • A pair of small magenta / teal hangul-impression neon roof signs.
+ *   • A couple extra sparkle pixels reinforcing "city of lights."
+ *
+ * Footprint stays inside x=80..96. The level-5 coin sits at (84,14) with
+ * its era label flag down to y≈21.8 — every building top is kept at
+ * y ≥ 23 so the coin and label remain unobstructed and the dotted path
+ * (which crosses the region around y=14..17) stays clear.
+ */
+function Seoul() {
+  return (
+    <g>
+      {/* Inline keyframes for the soft staggered window pulse — scoped via
+          .seoul-lit-* class names so they don't collide with anything else.
+          Honors prefers-reduced-motion. */}
+      <style>{`
+        @keyframes seoulWinPulse {
+          0%, 100% { opacity: 1; }
+          50%      { opacity: 0.35; }
+        }
+        .seoul-lit-warm { animation: seoulWinPulse 3.2s ease-in-out infinite; }
+        .seoul-lit-cool { animation: seoulWinPulse 4.1s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .seoul-lit-warm, .seoul-lit-cool { animation: none; opacity: 0.95; }
+        }
+      `}</style>
+
+      {/* Plaza floor + dark stone curb under the skyline. Same dark slate
+          palette as Houston so the lit windows pop, but kept below the
+          horizon line so the pastel sky still owns the upper third. */}
+      <rect x="80" y="44" width="16" height="14" fill="url(#cityFloor)" />
+      <rect x="80" y="58" width="16" height="2" fill="#22222a" />
+      <rect x="80" y="44" width="16" height="0.4" fill="#1a1830" />
+
+      {/* Distant Namsan-feeling hill silhouette, deep dusk-purple, sits
+          behind the skyline on the right where the Lotte tower stands. */}
+      <polygon
+        points="80,44 80,40 84,38 88,36 92,34.5 96,33.5 96,44"
+        fill="#3a2a5a"
+        opacity="0.85"
+      />
+      <polygon
+        points="80,44 80,42 86,40.5 92,39 96,38 96,44"
+        fill="#2e2348"
+      />
+
+      {/* ── Skyline cluster (back row first, gate goes on top later) ── */}
+      {/* Left flank, fully visible to the left of the gate. */}
+      <SeoulHighrise baseX={80.0} baseY={44} w={1.6} h={14} seed={1} />
+      {/* Three short towers BEHIND the gate — only tops poke above the
+          gate roof (which sits at y≈37). Bodies stop just inside the gate
+          roof shadow so we don't waste primitives on hidden geometry. */}
+      <SeoulHighrise baseX={82.5} baseY={37.4} w={1.3} h={10} seed={2} />
+      <SeoulHighrise baseX={85.0} baseY={37.4} w={1.4} h={12} seed={3} />
+      <SeoulHighrise baseX={86.8} baseY={37.4} w={1.2} h={8} seed={4} />
+      {/* Right flank, fully visible to the right of the gate. */}
+      <SeoulHighrise baseX={89.6} baseY={44} w={1.6} h={15} seed={5} />
+      <SeoulHighrise baseX={91.6} baseY={44} w={1.4} h={12} seed={6} />
+      {/* Slim, tapering super-tall — Lotte-World-style finger of the
+          skyline. Anchored at the right edge of the region. */}
+      <LotteWorldTower baseX={93.6} baseY={44} />
+
+      {/* Hangul-impression neon signs on building roofs. Stylised blocky
+          shapes only — no real Unicode (system font would fight the
+          pixel-art style). */}
+      <NeonSign x={80.0} y={29.2} color="#ff3aa3" />
+      <NeonSign x={89.7} y={28.2} color="#3ad4d4" />
+
+      {/* Foreground hero: Gwanghwamun palace gate. Drawn last so the
+          three arched gateways and the curved-eave pavilion roof read
+          cleanly in front of the skyline cluster. */}
+      <Gwanghwamun baseX={82} baseY={46} />
+
+      {/* "City of lights" sparkles — tiny extra twinkles that reuse the
+          existing .map-sparkle hook so they stay phase-locked with the
+          rest of the map. Two only, kept compact on building roofs. */}
+      <Sparkle cx={94.5} cy={22.6} size={0.35} phase={0.3} />
+      <Sparkle cx={86.0} cy={36.4} size={0.3} phase={1.8} />
+    </g>
+  )
+}
+
+/* High-rise apartment block — dusk-navy body with a deterministic grid of
+ * lit windows in butter-yellow + cool-teal + dark. A pinch of windows in
+ * the grid carry the .seoul-lit-warm / .seoul-lit-cool classes so they
+ * gently pulse (auto-disabled under prefers-reduced-motion). */
+function SeoulHighrise({
+  baseX,
+  baseY,
+  w,
+  h,
+  seed,
+}: {
+  baseX: number
+  baseY: number
+  w: number
+  h: number
+  seed: number
+}) {
+  const body = '#2a253d'
+  const cap = '#15121f'
+  const rim = '#3a2a5a'
+  const warm = '#ffd97a'
+  const cool = '#7adcd0'
+  const dark = '#1a1830'
+
+  const winW = 0.32
+  const winH = 0.42
+  const gapX = 0.78
+  const gapY = 1.1
+  const padX = 0.26
+  const padTop = 0.9
+  const padBot = 0.5
+
+  const cols = Math.max(1, Math.floor((w - 2 * padX + winW) / gapX))
+  const rows = Math.max(2, Math.floor((h - padTop - padBot) / gapY))
+
+  const windows: React.ReactNode[] = []
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const k = (r * 7 + c * 11 + seed * 13) % 17
+      let fill: string
+      let cls: string | undefined
+      let delay = 0
+      if (k <= 6) {
+        fill = warm
+        if (k % 3 === 0) {
+          cls = 'seoul-lit-warm'
+          delay = ((seed * 17 + r * 3 + c * 5) % 31) / 10
+        }
+      } else if (k <= 12) {
+        fill = cool
+        if (k % 4 === 0) {
+          cls = 'seoul-lit-cool'
+          delay = ((seed * 11 + r * 5 + c * 7) % 29) / 10
+        }
+      } else {
+        fill = dark
+      }
+      const wx = baseX + padX + c * gapX
+      const wy = baseY - h + padTop + r * gapY
+      windows.push(
+        <rect
+          key={`${seed}-w-${r}-${c}`}
+          x={wx}
+          y={wy}
+          width={winW}
+          height={winH}
+          fill={fill}
+          className={cls}
+          style={cls ? { animationDelay: `${delay}s` } : undefined}
+        />
+      )
+    }
+  }
+
+  return (
+    <g>
+      <rect x={baseX} y={baseY - h} width={w} height={h} fill={body} />
+      <rect x={baseX} y={baseY - h} width={w} height={0.4} fill={cap} />
+      <rect x={baseX} y={baseY - h + 0.4} width={0.18} height={h - 0.4} fill={rim} />
+      {windows}
+    </g>
+  )
+}
+
+/* Lotte World Tower-ish slim super-tall: stepped, gently tapering body
+ * with a single column of lit windows running up the spine and a short
+ * antenna pulse on top. */
+function LotteWorldTower({
+  baseX,
+  baseY,
+}: {
+  baseX: number
+  baseY: number
+}) {
+  const body = '#2e2348'
+  const rim = '#43345f'
+  const cap = '#15121f'
+  const warm = '#ffd97a'
+  const cool = '#7adcd0'
+  const tip = '#3ad4d4'
+
+  // Seven 3-unit stacked sections, each a hair narrower than the one
+  // below — this gives the famous Lotte taper without a real polygon.
+  const sections = [
+    { y: baseY - 3, w: 1.4 },
+    { y: baseY - 6, w: 1.3 },
+    { y: baseY - 9, w: 1.2 },
+    { y: baseY - 12, w: 1.1 },
+    { y: baseY - 15, w: 1.0 },
+    { y: baseY - 18, w: 0.9 },
+    { y: baseY - 21, w: 0.8 },
+  ]
+
+  const cx = baseX + 0.7
+
+  return (
+    <g>
+      {sections.map((s, i) => (
+        <rect
+          key={`lt-sec-${i}`}
+          x={cx - s.w / 2}
+          y={s.y}
+          width={s.w}
+          height={3}
+          fill={body}
+        />
+      ))}
+      {/* Spine highlight — one-pixel column on the left side of every
+          section to read as a stepped pixel-art rim. */}
+      {sections.map((s, i) => (
+        <rect
+          key={`lt-rim-${i}`}
+          x={cx - s.w / 2}
+          y={s.y}
+          width={0.16}
+          height={3}
+          fill={rim}
+        />
+      ))}
+      {/* Top cap. */}
+      <rect x={cx - 0.4} y={baseY - 21} width={0.8} height={0.4} fill={cap} />
+
+      {/* Single column of lit windows up the spine. Alternate warm/cool. */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        const wy = baseY - 2 - i * 1.6
+        const isCool = i % 3 === 0
+        const fill = isCool ? cool : warm
+        return (
+          <rect
+            key={`lt-win-${i}`}
+            x={cx - 0.18}
+            y={wy}
+            width={0.36}
+            height={0.5}
+            fill={fill}
+            className={isCool ? 'seoul-lit-cool' : 'seoul-lit-warm'}
+            style={{ animationDelay: `${(i * 0.27) % 3.2}s` }}
+          />
+        )
+      })}
+
+      {/* Antenna spire + pulsing tip. Tip uses the existing .map-sparkle
+          hook so it phase-locks with the other sparkles on the map. */}
+      <rect x={cx - 0.08} y={baseY - 22.4} width={0.16} height={1.4} fill="#9aa0ab" />
+      <rect
+        x={cx - 0.16}
+        y={baseY - 22.6}
+        width={0.32}
+        height={0.32}
+        fill={tip}
+        className="map-sparkle"
+        style={{ animationDelay: '1.3s' }}
+      />
+    </g>
+  )
+}
+
+/* Stylised hangul-impression neon sign: two stacked geometric blocks, no
+ * real Unicode. Reads as a glowing rooftop billboard at this scale. */
+function NeonSign({
+  x,
+  y,
+  color,
+}: {
+  x: number
+  y: number
+  color: string
+}) {
+  return (
+    <g>
+      {/* Top row: two squares side by side ("ㅇㅏ"-flavoured silhouette). */}
+      <rect x={x} y={y} width={0.5} height={0.5} fill={color} />
+      <rect x={x + 0.7} y={y} width={0.4} height={0.5} fill={color} />
+      {/* Bottom row: a single connecting bar. */}
+      <rect x={x} y={y + 0.65} width={1.1} height={0.32} fill={color} />
+      {/* Tiny attachment post + base dot on the roof. */}
+      <rect x={x + 0.45} y={y + 1} width={0.18} height={0.4} fill="#7a7a82" />
+    </g>
+  )
+}
+
+/* Gwanghwamun — the Gyeongbokgung-palace main gate. Built bottom-up:
+ *   1) Stone base with three arched gateways and a top capstone.
+ *   2) A wood-balcony band with red columns + dancheong-painted band.
+ *   3) Multi-tier pavilion roof in ceramic teal with up-turned eaves
+ *      stepped in pixel-art and a finial post on the roof crest.
+ *
+ * baseY is the ground line under the gate; the gate rises *upward* from
+ * there (matching how Capitol / UTTower are anchored in this file). */
+function Gwanghwamun({
+  baseX,
+  baseY,
+}: {
+  baseX: number
+  baseY: number
+}) {
+  const stone = '#d6c7a4'
+  const stoneDk = '#a89878'
+  const stonePlinth = '#8c7a5a'
+  const arch = '#1f1a2a'
+  const wood = '#7a3a1d'
+  const woodDk = '#4a2010'
+  const colRed = '#a02b2e'
+  const colRedHi = '#c44a3e'
+  const dcGold = '#e0a234'
+  const dcRed = '#a02b2e'
+  const dcBlue = '#3a6e8c'
+  const roof = '#3a6e8c'
+  const roofHi = '#5a98b4'
+  const roofShade = '#1f3848'
+  const finial = '#e0a234'
+
+  // ── 1) Stone base ────────────────────────────────────────────────────
+  // Body (x=82..88, y=42..46). 6 wide × 4 tall.
+  const baseW = 6
+  const x = baseX // 82
+  const y = baseY // 46
+
+  return (
+    <g>
+      {/* Base body */}
+      <rect x={x} y={y - 4} width={baseW} height={4} fill={stone} />
+      <rect x={x} y={y - 4} width={baseW} height={0.5} fill={stoneDk} />
+      <rect x={x} y={y - 0.5} width={baseW} height={0.5} fill={stonePlinth} />
+
+      {/* Three arched gateways. Center is taller, sides are shorter. */}
+      {/* Center arch */}
+      <rect x={x + 2.6} y={y - 2.8} width={0.8} height={2.8} fill={arch} />
+      <rect x={x + 2.7} y={y - 3.0} width={0.6} height={0.2} fill={arch} />
+      <rect x={x + 2.85} y={y - 3.2} width={0.3} height={0.2} fill={arch} />
+      {/* Left arch */}
+      <rect x={x + 0.7} y={y - 2.2} width={0.7} height={2.2} fill={arch} />
+      <rect x={x + 0.8} y={y - 2.4} width={0.5} height={0.2} fill={arch} />
+      {/* Right arch */}
+      <rect x={x + 4.6} y={y - 2.2} width={0.7} height={2.2} fill={arch} />
+      <rect x={x + 4.7} y={y - 2.4} width={0.5} height={0.2} fill={arch} />
+
+      {/* A few stone-block grout lines so the base reads as masonry. */}
+      <rect x={x} y={y - 3.0} width={baseW} height={0.12} fill={stoneDk} opacity="0.55" />
+      <rect x={x} y={y - 1.5} width={baseW} height={0.12} fill={stoneDk} opacity="0.55" />
+      <rect x={x + 2.0} y={y - 4} width={0.12} height={1} fill={stoneDk} opacity="0.55" />
+      <rect x={x + 4.0} y={y - 4} width={0.12} height={1} fill={stoneDk} opacity="0.55" />
+
+      {/* ── 2) Wood-balcony band sitting on the stone base ──────────── */}
+      {/* Band body (x=81.5..88.5, y=40..42). Slightly wider than the stone. */}
+      <rect x={x - 0.5} y={y - 6} width={baseW + 1} height={2} fill={wood} />
+      <rect x={x - 0.5} y={y - 6} width={baseW + 1} height={0.3} fill={woodDk} />
+      <rect x={x - 0.5} y={y - 4.3} width={baseW + 1} height={0.3} fill={woodDk} />
+
+      {/* Four red columns dropped through the wood band. */}
+      {[0.2, 1.9, 4.1, 5.8].map((dx, i) => (
+        <g key={`col-${i}`}>
+          <rect x={x + dx} y={y - 6} width={0.4} height={2} fill={colRed} />
+          <rect x={x + dx} y={y - 6} width={0.12} height={2} fill={colRedHi} />
+        </g>
+      ))}
+
+      {/* Dancheong painted band — alternating red/gold/blue pixel-blocks
+          across the top of the wood balcony. Six chunks for legibility. */}
+      <rect x={x - 0.5} y={y - 6.3} width={baseW + 1} height={0.3} fill={dcGold} />
+      <rect x={x + 0.0} y={y - 6.6} width={1.0} height={0.3} fill={dcRed} />
+      <rect x={x + 1.1} y={y - 6.6} width={1.0} height={0.3} fill={dcBlue} />
+      <rect x={x + 2.2} y={y - 6.6} width={1.0} height={0.3} fill={dcRed} />
+      <rect x={x + 3.3} y={y - 6.6} width={1.0} height={0.3} fill={dcBlue} />
+      <rect x={x + 4.4} y={y - 6.6} width={1.0} height={0.3} fill={dcRed} />
+
+      {/* ── 3) Pavilion roof ────────────────────────────────────────── */}
+      {/* Main roof body (x=81..89, y=37..39.6). 8 wide × 2.6 tall. */}
+      <rect x={x - 1} y={y - 9} width={baseW + 2} height={2.4} fill={roof} />
+      {/* Top highlight strip + bottom shadow strip. */}
+      <rect x={x - 1} y={y - 9} width={baseW + 2} height={0.3} fill={roofHi} />
+      <rect x={x - 1} y={y - 6.9} width={baseW + 2} height={0.3} fill={roofShade} />
+      {/* Horizontal tile ridges across the roof body. */}
+      <rect x={x - 1} y={y - 8.3} width={baseW + 2} height={0.12} fill={roofShade} opacity="0.6" />
+      <rect x={x - 1} y={y - 7.6} width={baseW + 2} height={0.12} fill={roofShade} opacity="0.6" />
+
+      {/* Up-turned eaves — stepped pixel-art curls at each end of the
+          roof. Three step-pixels per side curling up + outward. */}
+      {/* Left curl */}
+      <rect x={x - 1.4} y={y - 9} width={0.4} height={0.4} fill={roof} />
+      <rect x={x - 1.7} y={y - 9.3} width={0.4} height={0.4} fill={roof} />
+      <rect x={x - 1.95} y={y - 9.6} width={0.35} height={0.4} fill={roof} />
+      <rect x={x - 1.95} y={y - 9.6} width={0.35} height={0.15} fill={roofHi} />
+      {/* Right curl (mirrored) */}
+      <rect x={x + baseW + 1.0} y={y - 9} width={0.4} height={0.4} fill={roof} />
+      <rect x={x + baseW + 1.3} y={y - 9.3} width={0.4} height={0.4} fill={roof} />
+      <rect x={x + baseW + 1.6} y={y - 9.6} width={0.35} height={0.4} fill={roof} />
+      <rect x={x + baseW + 1.6} y={y - 9.6} width={0.35} height={0.15} fill={roofHi} />
+
+      {/* Roof crest / finial — small post + gold ball at the peak. */}
+      <rect x={x + baseW / 2 - 0.1} y={y - 9.9} width={0.2} height={0.9} fill={woodDk} />
+      <rect x={x + baseW / 2 - 0.25} y={y - 10.1} width={0.5} height={0.3} fill={finial} />
+      <rect x={x + baseW / 2 - 0.1} y={y - 10.4} width={0.2} height={0.3} fill={finial} />
+    </g>
+  )
+}
+
+/* ─────────────────  Region 6: Houston (NASA Space City)  ───────────────── */
+function Houston() {
+  // Concrete launch-pad / Mission Control plaza, big Saturn V rocket as
+  // hero, NASA "meatball" logo on a Mission Control building, plus one
+  // small Houston downtown skyscraper to keep the city anchor.
+  return (
+    <g>
+      <rect x="100" y="58" width="16" height="2" fill="#3a3a40" />
+      <rect x="100" y="42" width="16" height="16" fill="url(#cityFloor)" />
+
+      <rect x="100" y="42" width="16" height="0.6" fill="#22222a" />
+
+      <SaturnVRocket baseX={106.5} baseY={42} />
+      <LaunchSmoke baseX={106} baseY={42} />
+
+      <MissionControl baseX={101} baseY={42} />
+
+      <Skyscraper
+        baseX={113}
+        baseY={42}
+        h={11}
+        color="#5e5e6a"
+        highlight="#5fc6e6"
+      />
+    </g>
+  )
+}
+
+/**
+ * Stylised Saturn V — black-and-white banded fuselage, three stages,
+ * USA + a small NASA flag, fins, and a payload nose cone.
+ */
+function SaturnVRocket({
+  baseX,
+  baseY,
+}: {
+  baseX: number
+  baseY: number
+}) {
+  const W = 3.2
+  const x = baseX
+
+  return (
+    <g>
+      <rect x={x} y={baseY - 16} width={W} height={6} fill="#fdf6dd" />
+      <rect x={x} y={baseY - 14.8} width={W} height={0.5} fill="#1d1d1d" />
+      <rect x={x} y={baseY - 13.6} width={W} height={0.5} fill="#1d1d1d" />
+      <rect x={x} y={baseY - 12.2} width={W} height={0.5} fill="#1d1d1d" />
+      <rect x={x} y={baseY - 11} width={W} height={0.5} fill="#1d1d1d" />
+      <rect x={x + 0.2} y={baseY - 13.2} width={W - 0.4} height={1} fill="#fdf6dd" />
+      <text
+        x={x + W / 2}
+        y={baseY - 12.55}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={1}
+        fontFamily='"Press Start 2P", monospace'
+        fill="#cc1f1f"
+      >
+        USA
+      </text>
+
+      <polygon
+        points={`${x - 0.6},${baseY - 10} ${x + W + 0.6},${baseY - 10} ${x + W + 0.2},${baseY - 18} ${x - 0.2},${baseY - 18}`}
+        fill="#fdf6dd"
+      />
+      <rect x={x + W / 2 - 0.15} y={baseY - 18.5} width={0.3} height={0.6} fill="#1d1d1d" />
+      <polygon
+        points={`${x - 0.2},${baseY - 18} ${x + W + 0.2},${baseY - 18} ${x + W / 2},${baseY - 21}`}
+        fill="#cc1f1f"
+      />
+
+      <polygon
+        points={`${x - 0.6},${baseY - 10} ${x + W + 0.6},${baseY - 10} ${x + W + 0.2},${baseY - 6} ${x - 0.2},${baseY - 6}`}
+        fill="#1d1d1d"
+      />
+      <rect x={x + 0.2} y={baseY - 7.6} width={0.5} height={0.8} fill="#ffd56b" />
+      <rect x={x + 1.3} y={baseY - 7.6} width={0.5} height={0.8} fill="#ffd56b" />
+      <rect x={x + 2.4} y={baseY - 7.6} width={0.5} height={0.8} fill="#ffd56b" />
+
+      <polygon
+        points={`${x - 0.2},${baseY - 6} ${x + W + 0.2},${baseY - 6} ${x + W + 1.4},${baseY - 1} ${x - 1.4},${baseY - 1}`}
+        fill="#fdf6dd"
+      />
+      <polygon
+        points={`${x - 0.2},${baseY - 6} ${x - 1.4},${baseY - 1} ${x - 0.2},${baseY - 1}`}
+        fill="#cc1f1f"
+      />
+      <polygon
+        points={`${x + W + 0.2},${baseY - 6} ${x + W + 1.4},${baseY - 1} ${x + W + 0.2},${baseY - 1}`}
+        fill="#cc1f1f"
+      />
+
+      <rect x={x + W / 2 - 0.7} y={baseY - 1} width={1.4} height={1} fill="#3a78c4" />
+    </g>
+  )
+}
+
+/** Pixel-y exhaust cloud puffing out from the launch pad. */
+function LaunchSmoke({ baseX, baseY }: { baseX: number; baseY: number }) {
+  const puffs = [
+    { x: baseX - 1.5, y: baseY - 0.8, r: 1.2 },
+    { x: baseX + 0.5, y: baseY - 0.4, r: 1 },
+    { x: baseX + 2.6, y: baseY - 0.6, r: 1.1 },
+    { x: baseX + 4.6, y: baseY - 1.2, r: 1.3 },
+    { x: baseX + 5.5, y: baseY - 0.4, r: 0.9 },
+  ]
+  return (
+    <g>
+      {puffs.map((p, i) => (
+        <g key={i}>
+          <circle cx={p.x} cy={p.y} r={p.r + 0.2} fill="#7a7a82" opacity="0.7" />
+          <circle cx={p.x} cy={p.y - 0.2} r={p.r} fill="#cccccc" />
+          <circle cx={p.x - 0.2} cy={p.y - 0.4} r={p.r * 0.6} fill="#fdf6dd" />
+        </g>
+      ))}
+    </g>
+  )
+}
+
+/** Mission Control building — flat-roofed, satellite dish, NASA "meatball". */
+function MissionControl({
+  baseX,
+  baseY,
+}: {
+  baseX: number
+  baseY: number
+}) {
+  return (
+    <g>
+      <rect x={baseX} y={baseY - 5} width={5} height={5} fill="#fdf6dd" />
+      <rect x={baseX} y={baseY - 5} width={5} height={0.4} fill="#7a7a82" />
+      <rect x={baseX + 0.4} y={baseY - 4.4} width={1} height={1} fill="#3a78c4" />
+      <rect x={baseX + 1.6} y={baseY - 4.4} width={1} height={1} fill="#3a78c4" />
+      <rect x={baseX + 2.8} y={baseY - 4.4} width={1} height={1} fill="#3a78c4" />
+      <rect x={baseX + 0.4} y={baseY - 2.8} width={1} height={1} fill="#3a78c4" />
+      <rect x={baseX + 1.6} y={baseY - 2.8} width={1} height={1} fill="#3a78c4" />
+      <rect x={baseX + 2.8} y={baseY - 2.8} width={1} height={1} fill="#3a78c4" />
+      <rect x={baseX + 4.2} y={baseY - 1.6} width={0.6} height={1.6} fill="#3a2410" />
+
+      <NasaMeatball cx={baseX + 2.5} cy={baseY - 7} r={1.3} />
+
+      <rect x={baseX - 0.1} y={baseY - 6.2} width={0.2} height={1.2} fill="#7a7a82" />
+      <ellipse
+        cx={baseX - 0.5}
+        cy={baseY - 6.5}
+        rx={0.7}
+        ry={0.5}
+        fill="#cccccc"
+        stroke="#7a7a82"
+        strokeWidth={0.15}
+      />
+      <circle cx={baseX - 0.5} cy={baseY - 6.5} r={0.15} fill="#3a2410" />
+    </g>
+  )
+}
+
+/** NASA "meatball" logo: blue circle, swoosh, stars. */
+function NasaMeatball({
+  cx,
+  cy,
+  r,
+}: {
+  cx: number
+  cy: number
+  r: number
+}) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill="#0b3d91" />
+      <text
+        x={cx}
+        y={cy + 0.15}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={r * 0.85}
+        fontFamily='"Press Start 2P", monospace'
+        fontWeight="bold"
+        fill="#ffffff"
+      >
+        NASA
+      </text>
+      <path
+        d={`M ${cx - r * 0.8} ${cy + r * 0.45} Q ${cx} ${cy + r * 0.05} ${cx + r * 0.8} ${cy + r * 0.45}`}
+        stroke="#fc3d21"
+        strokeWidth={r * 0.18}
+        fill="none"
+      />
+      <circle cx={cx - r * 0.55} cy={cy - r * 0.45} r={r * 0.07} fill="#ffffff" />
+      <circle cx={cx + r * 0.4} cy={cy - r * 0.6} r={r * 0.05} fill="#ffffff" />
+      <circle cx={cx + r * 0.65} cy={cy - r * 0.2} r={r * 0.06} fill="#ffffff" />
+    </g>
+  )
+}
+
+function Skyscraper({
+  baseX,
+  baseY,
+  h,
+  color,
+  highlight,
+}: {
+  baseX: number
+  baseY: number
+  h: number
+  color: string
+  highlight: string
+}) {
+  const w = 3
+  const rows = Math.floor(h / 1.4)
+  const cols = 2
+  return (
+    <g>
+      <rect x={baseX} y={baseY - h} width={w} height={h} fill={color} />
+      <rect x={baseX} y={baseY - h} width={w} height={0.6} fill="#22222a" />
+      {Array.from({ length: rows }).flatMap((_, r) =>
+        Array.from({ length: cols }).map((_, c) => (
+          <rect
+            key={`${r}-${c}`}
+            x={baseX + 0.6 + c * 1.4}
+            y={baseY - h + 1 + r * 1.4}
+            width={0.6}
+            height={0.7}
+            fill={(r + c) % 3 === 0 ? highlight : '#fff7c2'}
+            opacity={0.85}
+          />
+        ))
+      )}
+    </g>
+  )
+}
+
+/* ──────────────────  Region 7: Austin (current home)  ─────────────────── */
+function AustinHome() {
+  // Endgame "castle" zone — wide platform, hill, then a scaled-up Capitol
+  // dressed up with banners and a flag.
+  return (
+    <g>
+      <rect x="118" y="58" width="22" height="2" fill="#6a4f36" />
+      <rect x="118" y="56" width="22" height="2" fill="url(#rock)" />
+      <rect x="118" y="42" width="22" height="14" fill="url(#grass)" />
+
+      <polygon points="118,42 140,42 140,28 134,24 128,22 122,24 118,28" fill="url(#hill)" />
+      <polygon points="118,42 140,42 140,32 134,28 128,26 122,28 118,32" fill="#5a8a4a" />
+
+      {/* Approach steps leading up to the Capitol */}
+      <rect x="125" y="40" width="10" height="0.6" fill="#c9b070" />
+      <rect x="126" y="38.6" width="8" height="0.6" fill="#c9b070" />
+      <rect x="127" y="37.2" width="6" height="0.6" fill="#c9b070" />
+
+      <g transform="translate(129 22) scale(1.35) translate(-129 -22)">
+        <Capitol baseX={123} baseY={22} />
+      </g>
+
+      <rect x="119" y="44" width="0.4" height="3" fill="#7a5326" />
+      <polygon points="119.4,44 121,44.6 119.4,45.2" fill="#cc1f1f" />
+      <rect x="139" y="44" width="0.4" height="3" fill="#7a5326" />
+      <polygon points="139.4,44 137.8,44.6 139.4,45.2" fill="#cc1f1f" />
+
+      <PalmTree cx={120} baseY={42} h={3.5} />
+      <PalmTree cx={138.8} baseY={42} h={3.5} />
+    </g>
+  )
+}
+
+function Capitol({ baseX, baseY }: { baseX: number; baseY: number }) {
+  // Texas Capitol — pink "sunset red" granite, central dome with cupola,
+  // columned portico, two side wings. Read this top-down: side wings,
+  // central rotunda, columned entrance, dome, drum, cupola, statue.
+  const granite = '#d68a73'
+  const graniteDk = '#a45c4a'
+  const graniteLt = '#e8a797'
+  const trim = '#f4dfa0'
+
+  return (
+    <g>
+      <rect x={baseX - 2} y={baseY - 4} width={4} height={4} fill={granite} />
+      <rect x={baseX - 2} y={baseY - 4} width={4} height={0.4} fill={graniteDk} />
+      <rect x={baseX - 1.4} y={baseY - 3.2} width={0.6} height={1} fill={trim} />
+      <rect x={baseX - 0.4} y={baseY - 3.2} width={0.6} height={1} fill={trim} />
+      <rect x={baseX - 1.4} y={baseY - 1.8} width={0.6} height={1} fill={trim} />
+      <rect x={baseX - 0.4} y={baseY - 1.8} width={0.6} height={1} fill={trim} />
+
+      <rect x={baseX + 10} y={baseY - 4} width={4} height={4} fill={granite} />
+      <rect x={baseX + 10} y={baseY - 4} width={4} height={0.4} fill={graniteDk} />
+      <rect x={baseX + 10.8} y={baseY - 3.2} width={0.6} height={1} fill={trim} />
+      <rect x={baseX + 11.8} y={baseY - 3.2} width={0.6} height={1} fill={trim} />
+      <rect x={baseX + 10.8} y={baseY - 1.8} width={0.6} height={1} fill={trim} />
+      <rect x={baseX + 11.8} y={baseY - 1.8} width={0.6} height={1} fill={trim} />
+
+      <rect x={baseX + 2} y={baseY - 5.2} width={8} height={5.2} fill={granite} />
+      <rect x={baseX + 2} y={baseY - 5.2} width={8} height={0.5} fill={graniteDk} />
+
+      <rect x={baseX + 3.6} y={baseY - 4.6} width={1} height={4.6} fill={trim} />
+      <rect x={baseX + 5.4} y={baseY - 4.6} width={1} height={4.6} fill={trim} />
+      <rect x={baseX + 7.2} y={baseY - 4.6} width={1} height={4.6} fill={trim} />
+
+      <rect x={baseX + 4} y={baseY - 1.6} width={4} height={1.6} fill="#3a2410" />
+
+      <polygon
+        points={`${baseX + 3},${baseY - 5.2} ${baseX + 9},${baseY - 5.2} ${baseX + 6},${baseY - 7}`}
+        fill={trim}
+      />
+      <polygon
+        points={`${baseX + 3.4},${baseY - 5.2} ${baseX + 8.6},${baseY - 5.2} ${baseX + 6},${baseY - 6.6}`}
+        fill={graniteLt}
+      />
+
+      <rect x={baseX + 3.6} y={baseY - 9.4} width={4.8} height={2.2} fill={granite} />
+      <rect x={baseX + 3.6} y={baseY - 9.4} width={4.8} height={0.4} fill={graniteDk} />
+      <rect x={baseX + 3.6} y={baseY - 7.6} width={4.8} height={0.4} fill={graniteDk} />
+      <rect x={baseX + 4} y={baseY - 9} width={0.4} height={1.4} fill="#3a2410" opacity="0.5" />
+      <rect x={baseX + 5} y={baseY - 9} width={0.4} height={1.4} fill="#3a2410" opacity="0.5" />
+      <rect x={baseX + 6.6} y={baseY - 9} width={0.4} height={1.4} fill="#3a2410" opacity="0.5" />
+      <rect x={baseX + 7.6} y={baseY - 9} width={0.4} height={1.4} fill="#3a2410" opacity="0.5" />
+      <text
+        x={baseX + 6}
+        y={baseY - 8.3}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={0.9}
+        fontFamily='"Press Start 2P", monospace'
+        fill={trim}
+      >
+        TEXAS
+      </text>
+
+      <path
+        d={`M ${baseX + 3.4},${baseY - 9.4}
+            A 2.6,2.6 0 0,1 ${baseX + 8.6},${baseY - 9.4}
+            Z`}
+        fill={granite}
+      />
+      <path
+        d={`M ${baseX + 4.2},${baseY - 9.4}
+            A 1.8,1.8 0 0,1 ${baseX + 7.8},${baseY - 9.4}
+            Z`}
+        fill={graniteLt}
+        opacity={0.6}
+      />
+      {/* Vertical ribs on the dome to give it the Capitol grooved look */}
+      {[0, 1, 2, 3, 4].map(i => {
+        const angle = -Math.PI / 2 + (i - 2) * (Math.PI / 12)
+        const r = 2.4
+        const cx = baseX + 6
+        const cy = baseY - 9.4
+        const x1 = cx + r * Math.cos(angle)
+        const y1 = cy + r * Math.sin(angle)
+        return (
+          <line
+            key={i}
+            x1={cx}
+            y1={cy}
+            x2={x1}
+            y2={y1}
+            stroke={graniteDk}
+            strokeWidth={0.18}
+            opacity={0.4}
+          />
+        )
+      })}
+
+      <rect
+        x={baseX + 5.4}
+        y={baseY - 12.4}
+        width={1.2}
+        height={0.4}
+        fill={graniteDk}
+      />
+      <rect
+        x={baseX + 5.5}
+        y={baseY - 13.4}
+        width={1}
+        height={1}
+        fill={trim}
+        stroke={graniteDk}
+        strokeWidth={0.15}
+      />
+      <path
+        d={`M ${baseX + 5.4},${baseY - 13.4}
+            A 0.6,0.6 0 0,1 ${baseX + 6.6},${baseY - 13.4}
+            Z`}
+        fill={graniteDk}
+      />
+
+      <rect x={baseX + 5.92} y={baseY - 15} width={0.16} height={1.6} fill="#3a2410" />
+      <rect x={baseX + 5.7} y={baseY - 16} width={0.6} height={0.7} fill={trim} />
+      <rect x={baseX + 5.85} y={baseY - 16.4} width={0.3} height={0.4} fill="#3a2410" />
+    </g>
+  )
+}
+
+/* ─────────────────────────  Connectors / path  ───────────────────────── */
+
+function Bridge({ x1, x2, y }: { x1: number; x2: number; y: number }) {
+  const w = x2 - x1
+  return (
+    <g>
+      <rect x={x1} y={y} width={w} height={1.2} fill="#a4763a" />
+      <rect x={x1} y={y - 0.6} width={w} height={0.6} fill="#7a5326" />
+      {Array.from({ length: Math.max(2, Math.round(w / 1.2)) }).map((_, i) => (
+        <rect
+          key={i}
+          x={x1 + 0.3 + i * (w / Math.max(2, Math.round(w / 1.2)))}
+          y={y - 1.6}
+          width={0.4}
+          height={1}
+          fill="#7a5326"
+        />
+      ))}
+    </g>
+  )
+}
+
+/**
+ * Visual dotted-trail between level nodes. Mirrors LEVELS positions in
+ * src/data/levels.ts.
+ */
+function DottedPath() {
+  const points: [number, number][] = [
+    [10, 46],
+    [30, 30],
+    [48, 44],
+    [70, 26],
+    [84, 14],
+    [114, 16],
+    [122, 38],
+  ]
+  const dots: { x: number; y: number }[] = []
+  for (let i = 0; i < points.length - 1; i++) {
+    const [ax, ay] = points[i]
+    const [bx, by] = points[i + 1]
+    const steps = 14
+    for (let s = 1; s < steps; s++) {
+      const t = s / steps
+      dots.push({ x: ax + (bx - ax) * t, y: ay + (by - ay) * t })
+    }
+  }
+  return (
+    <g>
+      {dots.map((d, i) => (
+        <rect
+          key={i}
+          x={d.x - 0.5}
+          y={d.y - 0.5}
+          width={1}
+          height={1}
+          fill="#ffe4d2"
+          stroke="#c47b8c"
+          strokeWidth={0.18}
+        />
+      ))}
+    </g>
+  )
+}

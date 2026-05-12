@@ -25,6 +25,7 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
+    "build-audio": "node scripts/render-chiptune.mjs",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },

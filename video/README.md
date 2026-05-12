@@ -63,21 +63,26 @@ The map / coin / chibi components are **copies** of the corresponding
 files under the main app's `src/components/`, with DOM state stripped
 out so they render deterministically frame-to-frame in Remotion.
 
-## TODO — audio
+## Audio
 
-V1 ships with no audio track. To add the in-site Zelda Overworld synth
-later, plumb something like:
+The intro plays the same 16-bit Zelda-Overworld chiptune the live site
+synthesizes from `src/hooks/useChiptune.ts`. Because Remotion renders
+frame-by-frame without a Web Audio runtime, the song is pre-baked to a
+WAV on disk:
 
-```tsx
-import { Audio } from 'remotion';
-import overworld from '../public/overworld-bake.wav';
-// inside IntroScene:
-<Audio src={overworld} />
+```bash
+cd video
+npm run build-audio    # → writes public/chiptune.wav (~1.3 MB, 15.5s mono)
 ```
 
-The current site generates audio in real time from
-`src/audio/useChiptune.ts`; for the video we'd need to either pre-bake a
-WAV/MP3 of the same melody (run the synth offline → record → drop into
-`video/public/`) or port the Web-Audio synth into Remotion's
-`<Audio />` pipeline. Either way is a separate workstream from the
-visuals.
+`scripts/render-chiptune.mjs` mirrors the hook's note sequence + voicing
+(two detuned square waves for lead, triangle bass, per-voice ADSR,
+~5 kHz lowpass, 80 ms slap delay) and writes a 44.1 kHz / 16-bit PCM WAV
+with a hand-rolled header — no audio-library dependency. The composition
+in `src/Composition.tsx` mounts the WAV via `<Audio src={staticFile(...)} />`
+with a frame-based volume envelope so it fades in over frames 0–10 and
+out over frames 440–450, peaking at 0.6.
+
+The chiptune is committed to git as `public/chiptune.wav` so renders
+work without re-running `build-audio`. Re-run the script whenever the
+note data or synth parameters change.
